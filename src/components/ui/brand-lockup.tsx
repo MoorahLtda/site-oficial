@@ -9,6 +9,23 @@ import { cn } from "@/lib/utils";
   Decorativo por padrao (aria-hidden e alt vazio): quem carrega o nome acessivel e o link ou o
   titulo em volta. Passe `label` apenas quando o lockup for a unica referencia a marca naquele
   trecho, como no rodape.
+
+  Consumidores hoje: os dois blocos plum (cartao.tsx e contato.tsx), que usavam copias identicas
+  desta funcao antes da extracao.
+
+  Os outros tres lockups da pagina NAO foram migrados, de proposito:
+
+  - header.tsx: as duas imagens sao filhas diretas do <Link>, que ja e o flex, carrega gap-2.5,
+    h-11 de alvo de toque e o aria-label da marca. Migrar acrescenta um <div> entre o link e as
+    imagens e obriga a mover o flex do link para o primitivo. As alturas responsivas
+    (h-6 sm:h-7 lg:h-8) e o priority nas duas pecas ja cabem nas props; o impedimento e a
+    estrutura, nao a API. Vale migrar junto com uma revisao dos testes do header.
+  - footer.tsx: e vertical com gap-3, o que o primitivo faz. A diferenca e de acessibilidade: la o
+    nome vive no alt do wordmark (um <img> nomeado), aqui viveria no grupo via `label` (role="img"
+    com alt vazio nas duas pecas). Os dois caminhos sao validos, mas trocar muda qual elemento
+    carrega o nome e o teste do rodape afirma "exatamente um img com nome acessivel".
+  - hero-stage.tsx: e so o simbolo dentro de um disco branco, sem a palavra. O primitivo sempre
+    desenha as duas pecas, entao nao serve, e nem deveria.
 */
 
 // Dimensoes reais dos arquivos em public/brand: o next/image reserva o espaco pelo aspect-ratio.
@@ -48,7 +65,8 @@ export function BrandLockup({
       aria-label={label}
       className={cn(
         "flex",
-        direction === "row" ? "items-center gap-2.5" : "flex-col items-start gap-3",
+        // gap-2 e o espacamento dos dois blocos plum; o header usa 2.5 e passa por className.
+        direction === "row" ? "items-center gap-2" : "flex-col items-start gap-3",
         className,
       )}
     >
