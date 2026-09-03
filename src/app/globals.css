@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Tokens da marca Moorah (amora + folha + neutros tingidos de ameixa).
+  Fonte: Manual de Identidade Visual Moorah 2026.01 e design system Morah.
+*/
+@theme {
+  --color-berry-50: #fbf4fb;
+  --color-berry-100: #f4e4f3;
+  --color-berry-200: #e8c8e7;
+  --color-berry-300: #d49fd2;
+  --color-berry-400: #bd6fba;
+  --color-berry-500: #a4459c;
+  --color-berry-600: #8a2f82;
+  --color-berry-700: #6f2568;
+  --color-berry-800: #511e4c;
+  --color-berry-900: #341432;
+  --color-berry-950: #1f0b20;
+  --color-ink: #4b244d;
+  --color-lilac: #e8c8e7;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-leaf-50: #ecf7ef;
+  --color-leaf-100: #d2edd9;
+  --color-leaf-200: #a9dcb8;
+  --color-leaf-300: #7bc795;
+  --color-leaf-400: #4fae6f;
+  --color-leaf-500: #3e9b63;
+  --color-leaf-600: #2f7d4e;
+  --color-leaf-700: #245f3c;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-gray-50: #f8f6fa;
+  --color-gray-100: #f0eef4;
+  --color-gray-200: #e2dfe9;
+  --color-gray-300: #ccc8d6;
+  --color-gray-400: #a7a1b5;
+  --color-gray-500: #7c7689;
+  --color-gray-600: #5b5667;
+  --color-gray-700: #433f4d;
+  --color-gray-800: #2b2833;
+  --color-gray-900: #1a1720;
+  --color-gray-950: #100e14;
+
+  --color-info-500: #3b7be0;
+  --color-warning-500: #f5b12e;
+  --color-critical-500: #e23d3d;
+
+  --color-background: #ffffff;
+  --color-foreground: #1a1720;
+  --color-muted: #5b5667;
+  --color-surface: #f8f6fa;
+  --color-border: #e2dfe9;
+
+  --font-display: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+
+  --shadow-card: 0 1px 2px rgb(31 11 32 / 0.04), 0 0 0 1px rgb(31 11 32 / 0.05);
+  --shadow-float: 0 12px 32px rgb(31 11 32 / 0.12);
+  --shadow-deep: 0 26px 60px rgb(31 11 32 / 0.28);
+  --shadow-glow: 0 0 0 6px rgb(164 69 156 / 0.14);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-marquee: marquee 44s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-accordion-down: accordion-down 320ms var(--ease-out-expo);
+  --animate-accordion-up: accordion-up 250ms var(--ease-out-expo);
+  --animate-fade-in: fade-in 250ms var(--ease-out-expo);
+  --animate-zoom-in: zoom-in 300ms var(--ease-out-expo);
+  --animate-slide-in-right: slide-in-right 380ms var(--ease-out-expo);
+  --animate-pulse-once: pulse-once 500ms var(--ease-out-expo);
+  --animate-float-slow: float 7s ease-in-out infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+  --animate-comet: comet 4.5s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(1.7);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes zoom-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  /* Deriva lenta do halo do hero (background decorativo). */
+  @keyframes drift {
+    from {
+      transform: translate3d(-4%, -3%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(4%, 3%, 0) scale(1.08);
+    }
+  }
+  /* "Cometa" percorrendo uma trilha SVG com pathLength="100" e stroke-dasharray "12 100". */
+  @keyframes comet {
+    from {
+      stroke-dashoffset: 112;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes pulse-once {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.03);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-gray-900);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-berry-500) 50%, transparent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: var(--color-berry-200);
+    color: var(--color-berry-950);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Largura de conteudo padrao do site (1200px) com respiro lateral. */
+@utility container-x {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Rotulo pequeno em caixa alta acima dos titulos de secao. */
+@utility eyebrow {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-berry-500);
+}
+
+/* Placeholder de carregamento com brilho deslizante. */
+@utility skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-100) 0%,
+    var(--color-gray-50) 50%,
+    var(--color-gray-100) 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Texto com gradiente da marca. */
+@utility text-gradient-berry {
+  background: linear-gradient(135deg, #a4459c 0%, #6f2568 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

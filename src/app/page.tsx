@@ -1,69 +1,114 @@
-import Image from "next/image";
+import dynamic from "next/dynamic";
+import { ComoFunciona } from "@/components/sections/como-funciona";
+import { Diferenciais } from "@/components/sections/diferenciais";
+import { Especialidades } from "@/components/sections/especialidades";
+import { Footer } from "@/components/sections/footer";
+import { Header } from "@/components/sections/header";
+import { Hero } from "@/components/sections/hero";
+import { MobileCtaBar } from "@/components/sections/mobile-cta-bar";
+import { PorQue } from "@/components/sections/por-que";
+import { SectionSkeleton } from "@/components/ui/section-skeleton";
+import { plans, site } from "@/content/site";
+
+/*
+  Composicao da landing (docs/design-brief.md, secao 6). As quatro primeiras secoes saem no HTML
+  inicial; as demais entram por next/dynamic (sem ssr:false: o servidor continua renderizando o
+  HTML, so o chunk cliente e adiado) com SectionSkeleton reservando a altura para evitar CLS.
+*/
+
+const Cartao = dynamic(() => import("@/components/sections/cartao").then((mod) => mod.Cartao), {
+  loading: () => <SectionSkeleton minHeight="min-h-[640px]" />,
+});
+const Beneficios = dynamic(
+  () => import("@/components/sections/beneficios").then((mod) => mod.Beneficios),
+  { loading: () => <SectionSkeleton minHeight="min-h-[900px]" /> },
+);
+const Planos = dynamic(() => import("@/components/sections/planos").then((mod) => mod.Planos), {
+  loading: () => <SectionSkeleton minHeight="min-h-[960px]" />,
+});
+const Duvidas = dynamic(() => import("@/components/sections/duvidas").then((mod) => mod.Duvidas), {
+  loading: () => <SectionSkeleton minHeight="min-h-[720px]" />,
+});
+const Contato = dynamic(() => import("@/components/sections/contato").then((mod) => mod.Contato), {
+  loading: () => <SectionSkeleton minHeight="min-h-[640px]" />,
+});
+
+// Dados estruturados (schema.org). Tudo vem de site.ts: nada de avaliacoes, notas ou selos.
+const organizationId = `${site.url}/#organization`;
+const sameAs = [site.social.instagram, site.social.linkedin].filter((url) => url !== "");
+
+function priceOf(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: site.product,
+      legalName: site.legalName,
+      url: site.url,
+      logo: `${site.url}/brand/moorah-mark.png`,
+      description: site.description,
+      email: site.contact.email,
+      ...(sameAs.length > 0 ? { sameAs } : {}),
+    },
+    {
+      "@type": "Product",
+      "@id": `${site.url}/#product`,
+      name: site.product,
+      description: site.description,
+      url: site.url,
+      brand: { "@type": "Brand", name: site.name },
+      manufacturer: { "@id": organizationId },
+      offers: plans.map((plan) => ({
+        "@type": "Offer",
+        name: plan.name,
+        description: plan.headline,
+        url: `${site.url}/#planos`,
+        price: priceOf(plan.priceCents),
+        priceCurrency: "BRL",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: priceOf(plan.priceCents),
+          priceCurrency: "BRL",
+          billingDuration: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+        },
+        eligibleQuantity: { "@type": "QuantitativeValue", value: plan.people, unitText: "pessoa" },
+        seller: { "@id": organizationId },
+      })),
+    },
+  ],
+};
+
+// "<" vira < para o JSON nunca fechar a tag <script> (recomendacao dos docs do Next).
+const jsonLdHtml = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON serializado de site.ts, sem input de usuario; "<" escapado acima.
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
+      />
+      <Header />
+      <main id="conteudo" className="flex-1">
+        <Hero />
+        <PorQue />
+        <ComoFunciona />
+        <Especialidades />
+        <Cartao />
+        <Beneficios />
+        <Planos />
+        <Diferenciais />
+        <Duvidas />
+        <Contato />
       </main>
-    </div>
+      <Footer />
+      <MobileCtaBar />
+    </>
   );
 }

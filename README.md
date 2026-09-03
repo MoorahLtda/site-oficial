@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Moorah Telemedicina - Landing page
 
-## Getting Started
+Site institucional e de captacao do Moorah Telemedicina: assinatura mensal com consultas
+medicas online ilimitadas, em qualquer especialidade, nos planos Individual e Familiar, com
+Cartao Moorah de beneficios (farmacias, exames e lojas parceiras).
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router, Turbopack) + React 19 + TypeScript
+- Tailwind CSS v4 com tokens da marca em `src/app/globals.css`
+- motion (framer) para animacoes, lucide-react para icones, Radix para accordion e dialog
+- Fontes auto-hospedadas (Fontsource): Plus Jakarta Sans, Manrope, JetBrains Mono
+- Qualidade: Biome, Commitlint, Vitest + Testing Library, Playwright + axe-core
+
+## Como rodar
+
+Pre-requisito: Node.js 20.9 ou superior.
+
+```bash
+npm install
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra http://localhost:3000. No PowerShell, use `npm.cmd` no lugar de `npm`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Script | O que faz |
+| --- | --- |
+| `npm run dev` | servidor de desenvolvimento |
+| `npm run build` / `npm run start` | build e servidor de producao |
+| `npm run lint` / `npm run lint:fix` | Biome (lint + formatacao) |
+| `npm run typecheck` | gera tipos do Next e roda `tsc` |
+| `npm run test` | testes unitarios (Vitest) |
+| `npm run test:e2e` | testes end-to-end (Playwright, usa o Edge instalado) |
+| `npm run check` | lint + typecheck + testes unitarios |
+| `npm run audit:deps` | `npm audit` com nivel high |
+| `npm run shots` | captura a home por secao, no desktop e no mobile, em `.shots/` |
+| `npm run shots:legal` | captura /termos, /privacidade e /lgpd em `.shots/` |
+| `npm run check:overflow` | aponta o que causa rolagem horizontal em 390 e 360 px |
 
-To learn more about Next.js, take a look at the following resources:
+Os tres ultimos precisam de um servidor em http://localhost:3000 e usam o Edge instalado na
+maquina, sem baixar navegador.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Variaveis de ambiente
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Copie `.env.example` para `.env.local` e preencha. Nenhuma variavel e obrigatoria para rodar
+localmente; contatos, WhatsApp, CNPJ e link do portal so aparecem quando definidos.
 
-## Deploy on Vercel
+## Estrutura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/app/                 rotas, layout, metadata, icones, imagem OG, API de leads
+src/components/sections  secoes da landing
+src/components/ui        primitivos reutilizaveis
+src/components/providers provedores (motion)
+src/content/site.ts      todo o conteudo (textos, precos, listas)
+src/lib                  utilitarios e regras de negocio (leads)
+tests/e2e                Playwright
+docs/                    brief de design e conteudo a confirmar
+public/brand             logos e arte do cartao
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Convencoes
+
+Leia `CLAUDE.md`: regras de marca, escrita (sem travessao), acessibilidade, performance e fluxo
+de trabalho (Conventional Commits, TDD, issues e PRs quando houver repositorio remoto).
+
+## Antes de publicar
+
+Revise `docs/conteudo-a-confirmar.md`: precos, regras comerciais, dados da empresa, destino dos
+leads e textos juridicos.
