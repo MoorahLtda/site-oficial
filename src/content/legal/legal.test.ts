@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { legalLinks } from "../site";
 import { legalDocuments, legalNav, legalSlugs } from "./index";
 import type { LegalBlock, LegalDocument, LegalSlug } from "./types";
 
@@ -9,7 +10,8 @@ import type { LegalBlock, LegalDocument, LegalSlug } from "./types";
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const EM_DASH = "—";
+// Travessao (U+2014) escrito como escape para o caractere nao existir no repositorio.
+const EM_DASH = "\u2014";
 
 function textsOf(block: LegalBlock): string[] {
   return [block.text ?? "", ...(block.items ?? [])];
@@ -101,5 +103,15 @@ describe.each(entries)("documento %s", (slug, doc) => {
     const banned =
       /\b(alavanc\w*|transformador\w*|fluid[oa]s?|destrav\w*|otimiz\w*|robust\w*|sinergi\w*)\b/i;
     for (const text of allTexts(doc)) expect(text).not.toMatch(banned);
+  });
+});
+
+describe("legalLinks (header)", () => {
+  it("cobre os tres documentos com os mesmos titulos e rotas", () => {
+    expect(legalLinks.map((l) => l.slug)).toEqual([...legalSlugs]);
+    for (const link of legalLinks) {
+      expect(link.label).toBe(legalDocuments[link.slug].title);
+      expect(link.href).toBe(`/${link.slug}`);
+    }
   });
 });

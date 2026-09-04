@@ -4,11 +4,11 @@ import { Menu } from "lucide-react";
 import { m, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { nav, site, ui } from "@/content/site";
+import { legalLinks, nav, site, ui } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 type NavId = (typeof nav)[number]["id"];
@@ -122,6 +122,44 @@ export function Header() {
         {ui.header.skip}
       </a>
 
+      {/*
+        Faixa de documentos legais, o "rodape de cima" pedido pelo cliente: Termos, Privacidade e
+        LGPD sempre a um clique. Visivel no topo e recolhida ao rolar, para o header ficar compacto.
+        `inert` tira os links do foco e da leitura enquanto a faixa esta fechada. No mobile os
+        mesmos links vivem no menu.
+      */}
+      <div
+        data-testid="legal-bar"
+        inert={scrolled}
+        className={cn(
+          "hidden overflow-hidden border-b border-gray-200/80 bg-gray-50 transition-[height,opacity] duration-250 ease-out-expo md:block",
+          scrolled ? "h-0 opacity-0" : "h-8 opacity-100",
+        )}
+      >
+        <Container>
+          <nav
+            aria-label={ui.header.legalLabel}
+            className="flex h-8 items-center justify-end gap-3"
+          >
+            {legalLinks.map((link, index) => (
+              <Fragment key={link.slug}>
+                {index > 0 ? (
+                  <span aria-hidden="true" className="text-gray-400">
+                    ·
+                  </span>
+                ) : null}
+                <Link
+                  href={link.href}
+                  className="font-mono text-[11px] uppercase tracking-[0.14em] text-gray-600 transition-colors duration-200 ease-out-expo hover:text-gray-900"
+                >
+                  {link.label}
+                </Link>
+              </Fragment>
+            ))}
+          </nav>
+        </Container>
+      </div>
+
       <Container className="flex h-16 items-center justify-between lg:h-[72px]">
         {/*
           Lockup horizontal (brief v2, item 2): simbolo + palavra, ambos plum, dentro do unico
@@ -230,9 +268,31 @@ export function Header() {
                   ))}
                 </ul>
               </nav>
+              {/* Documentos legais no menu mobile, ja que a faixa do topo so aparece em md+. */}
+              <nav
+                aria-label={ui.header.legalLabel}
+                className="mt-8 animate-fade-in [animation-fill-mode:backwards]"
+                style={{ animationDelay: `${nav.length * 40}ms` }}
+              >
+                <p className="eyebrow">{ui.header.legalLabel}</p>
+                <ul className="mt-2 flex flex-col">
+                  {legalLinks.map((link) => (
+                    <li key={link.slug}>
+                      <DialogClose asChild>
+                        <Link
+                          href={link.href}
+                          className="block min-h-11 py-2.5 font-sans text-base font-semibold text-gray-700 transition-colors duration-200 hover:text-gray-900"
+                        >
+                          {link.label}
+                        </Link>
+                      </DialogClose>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
               <div
                 className="mt-8 flex flex-col gap-3 animate-fade-in [animation-fill-mode:backwards]"
-                style={{ animationDelay: `${nav.length * 40}ms` }}
+                style={{ animationDelay: `${(nav.length + 1) * 40}ms` }}
               >
                 <DialogClose asChild>
                   <Button size="lg" fullWidth asChild>

@@ -43,4 +43,34 @@ test.describe("Header", () => {
     await expect(page).toHaveURL(/#especialidades$/);
     await expect(link).toHaveAttribute("aria-current", "true", { timeout: 2_000 });
   });
+
+  test("documentos legais no topo: faixa no desktop (recolhe ao rolar) e menu no mobile", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto("/");
+    const banner = page.getByRole("banner");
+    if (isMobile) {
+      await page.getByRole("button", { name: "Abrir menu" }).click();
+      const legal = page.getByRole("dialog").getByRole("navigation", { name: "Documentos legais" });
+      await expect(legal.getByRole("link")).toHaveCount(3);
+      await expect(legal.getByRole("link", { name: "Política de privacidade" })).toHaveAttribute(
+        "href",
+        "/privacidade",
+      );
+      return;
+    }
+    const bar = banner.getByTestId("legal-bar");
+    const privacy = bar.getByRole("link", { name: "Política de privacidade" });
+    await expect(privacy).toBeVisible();
+    await expect(bar.getByRole("link")).toHaveCount(3);
+    await expect(privacy).toHaveAttribute("href", "/privacidade");
+    await expect(bar).toHaveJSProperty("inert", false);
+
+    await page.mouse.wheel(0, 600);
+    await expect(banner).toHaveAttribute("data-scrolled", "true");
+    // A faixa fecha (altura zero) e sai do foco e da leitura.
+    await expect.poll(async () => (await bar.boundingBox())?.height ?? 0).toBeLessThan(1);
+    await expect(bar).toHaveJSProperty("inert", true);
+  });
 });

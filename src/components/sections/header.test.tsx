@@ -1,9 +1,13 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { nav, site, ui } from "@/content/site";
+import { legalLinks, nav, site, ui } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Header } from "./header";
+
+// Tracos escritos por codigo para o caractere nao existir no repositorio.
+const EN_DASH = String.fromCharCode(0x2013);
+const EM_DASH = String.fromCharCode(0x2014);
 
 // appUrl vem de variavel de ambiente; fixamos vazio para o teste ser deterministico.
 vi.mock("@/content/site", async (importOriginal) => {
@@ -98,5 +102,37 @@ describe("Header", () => {
     const shortLinks = screen.getAllByRole("link", { name: ui.header.ctaShort });
     expect(shortLinks).toHaveLength(2);
     for (const link of shortLinks) expect(link).toHaveAttribute("href", "#planos");
+  });
+
+  it("traz a faixa de documentos legais com os tres links, separados por ponto mediano", () => {
+    renderWithMotion(<Header />);
+    const bar = screen.getByTestId("legal-bar");
+    // No topo a faixa esta aberta: nada de inert.
+    expect(bar).not.toHaveAttribute("inert");
+    const navigation = within(bar).getByRole("navigation", { name: ui.header.legalLabel });
+    const links = within(navigation).getAllByRole("link");
+    expect(links).toHaveLength(legalLinks.length);
+    legalLinks.forEach((item, index) => {
+      expect(links[index]).toHaveAttribute("href", item.href);
+      expect(links[index]).toHaveTextContent(item.label);
+    });
+    // Separador e "·"; nenhum traco (hifen, meia-risca ou travessao) solto no texto.
+    expect(navigation.textContent).toContain("·");
+    expect(navigation.textContent).not.toMatch(new RegExp(`[-${EN_DASH}${EM_DASH}]s`));
+  });
+
+  it("a folha do menu repete os documentos legais, ja que a faixa so aparece a partir de md", async () => {
+    const user = userEvent.setup();
+    renderWithMotion(<Header />);
+    await user.click(screen.getByRole("button", { name: ui.header.menuOpen }));
+    const dialog = screen.getByRole("dialog", { name: ui.header.menuTitle });
+    const legal = within(dialog).getByRole("navigation", { name: ui.header.legalLabel });
+    expect(within(legal).getAllByRole("link")).toHaveLength(legalLinks.length);
+    for (const item of legalLinks) {
+      expect(within(legal).getByRole("link", { name: item.label })).toHaveAttribute(
+        "href",
+        item.href,
+      );
+    }
   });
 });

@@ -330,6 +330,17 @@ export const faq: readonly FaqItem[] = [
   },
 ] as const;
 
+/*
+  Links dos documentos legais para o header e o menu mobile. Copia leve dos titulos de
+  src/content/legal (o header e cliente e nao pode carregar os documentos inteiros no bundle).
+  legal.test.ts garante que os titulos continuam iguais aos dos documentos.
+*/
+export const legalLinks = [
+  { slug: "termos", href: "/termos", label: "Termos de uso" },
+  { slug: "privacidade", href: "/privacidade", label: "Política de privacidade" },
+  { slug: "lgpd", href: "/lgpd", label: "LGPD e seus direitos" },
+] as const;
+
 export const legalNotes = [
   "A Moorah não é plano de saúde e não é operadora regulada pela ANS.",
   "Telemedicina regulamentada pela Resolução CFM nº 2.314/2022.",
@@ -500,6 +511,8 @@ export const ui = {
     menuClose: "Fechar menu",
     menuTitle: "Menu",
     skip: "Pular para o conteúdo",
+    // Faixa fina acima do header e grupo no menu mobile com Termos, Privacidade e LGPD.
+    legalLabel: "Documentos legais",
   },
   mobileBar: { cta: "Ver planos", label: "Atalho para planos" },
   footer: {
