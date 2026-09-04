@@ -81,14 +81,6 @@ function PeopleNodes({ lit, total, plum }: PeopleNodesProps) {
         const on = slot <= lit;
         return (
           <span key={slot} className="flex items-center gap-1.5">
-            {slot > 1 ? (
-              <span
-                className={cn(
-                  "h-px w-3 transition-colors duration-300 ease-out-expo",
-                  on ? tone.trail : tone.off,
-                )}
-              />
-            ) : null}
             <span
               className={cn(
                 "block h-2 w-2 rounded-full transition-colors duration-300 ease-out-expo",
@@ -154,7 +146,7 @@ function PlanCard({ plan, active, people, perPersonLine }: PlanCardProps) {
       <p className="mt-6 flex items-end gap-1">
         <span
           className={cn(
-            "font-display font-extrabold tabular-nums leading-none text-5xl lg:text-[3.5rem]",
+            "font-display font-bold tabular-nums leading-none text-5xl lg:text-[3.5rem]",
             plum ? "text-white" : "text-gray-900",
           )}
         >

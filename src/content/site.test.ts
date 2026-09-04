@@ -25,7 +25,8 @@ import {
   ui,
 } from "./site";
 
-const EM_DASH = "—";
+// Travessao (U+2014) escrito como escape para o caractere nao existir no repositorio.
+const EM_DASH = "\u2014";
 const NBSP = / /g;
 
 function walkStrings(value: unknown, out: string[] = []): string[] {

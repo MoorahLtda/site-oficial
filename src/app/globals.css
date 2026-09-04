@@ -248,12 +248,15 @@
   }
 }
 
-/* Rotulo pequeno em caixa alta acima dos titulos de secao. */
+/*
+  Rotulo pequeno acima dos titulos. Segue os rotulos do proprio manual da marca
+  ("06 · TIPOGRAFIA"): mono, caixa alta, tracking amplo, berry. Nunca acompanhado de traco.
+*/
 @utility eyebrow {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.75rem;
-  letter-spacing: 0.22em;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-berry-500);
 }

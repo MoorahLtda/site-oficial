@@ -38,12 +38,12 @@ interface ColumnProps {
   children: ReactNode;
 }
 
-// Titulo de coluna (h2, para navegacao por leitor de tela) em mono caixa alta com traco curto de amora.
+// Titulo de coluna (h2, para navegacao por leitor de tela) em mono caixa alta, sem traco:
+// qualquer risco horizontal curto le como travessao, que a marca nao usa.
 function Column({ label, className, children }: ColumnProps) {
   return (
     <div className={className}>
-      <h2 className="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
-        <span aria-hidden="true" className="h-px w-4 bg-berry-300" />
+      <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
         {label}
       </h2>
       {children}

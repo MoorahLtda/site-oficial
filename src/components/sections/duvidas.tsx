@@ -1,6 +1,6 @@
 import { Mail, MessageCircle, Siren } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
+import { RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { faqSection, legalNotes, site, ui } from "@/content/site";
@@ -30,7 +30,6 @@ export function Duvidas() {
       <div className="order-2 self-start space-y-8 lg:sticky lg:top-28 lg:order-1 lg:col-span-4">
         <div>
           <SectionHeading id={TITLE_ID} eyebrow={faqSection.eyebrow} title={faqSection.title} />
-          <Reveal variant="line" duration={900} className="mt-6 h-0.5 w-16 origin-left bg-ink" />
         </div>
 
         <RevealGroup stagger={0.1} className="space-y-4">

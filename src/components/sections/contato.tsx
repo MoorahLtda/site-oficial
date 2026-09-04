@@ -71,15 +71,7 @@ export function Contato() {
       <div className="relative z-10 lg:col-span-5">
         <Reveal duration={600} y={24}>
           <BrandLockup tone="white" className="opacity-90" />
-          <div className="mt-6 flex items-center gap-3">
-            <Reveal
-              variant="line"
-              duration={900}
-              amount={0.4}
-              className="h-0.5 w-10 origin-left rounded-full bg-berry-300"
-            />
-            <p className="eyebrow text-berry-300">{finalCta.eyebrow}</p>
-          </div>
+          <p className="eyebrow mt-6 text-berry-300">{finalCta.eyebrow}</p>
           <h2
             id={HEADING_ID}
             className="mt-4 font-display text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]"

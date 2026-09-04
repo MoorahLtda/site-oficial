@@ -173,8 +173,7 @@ export function LegalPage({ doc }: LegalPageProps) {
           {/* Sumario lateral: primeiro no mobile depois do titulo, fixo no desktop */}
           <aside className="lg:col-span-3 lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <div className="lg:sticky lg:top-24">
-              <p className="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
-                <span aria-hidden="true" className="h-px w-4 bg-berry-300" />
+              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
                 {labels.summary}
               </p>
               <nav aria-label={labels.summaryNav} className="mt-4">
@@ -194,9 +193,8 @@ export function LegalPage({ doc }: LegalPageProps) {
 
               <p
                 id={othersLabelId}
-                className="mt-10 flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600"
+                className="mt-10 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600"
               >
-                <span aria-hidden="true" className="h-px w-4 bg-berry-300" />
                 {labels.others}
               </p>
               {/* O rotulo visivel e o nome do nav, para o leitor de tela nao ouvir o texto duas vezes. */}

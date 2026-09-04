@@ -1,4 +1,4 @@
-import { Check, CircleCheck, Minus, Siren } from "lucide-react";
+import { Check, CircleCheck, CircleX, Siren, X } from "lucide-react";
 import Image from "next/image";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/ui/reveal";
@@ -128,13 +128,13 @@ export function Planos() {
                 id={NOT_INCLUDED_ID}
                 className="flex items-center gap-2 font-display text-lg font-semibold text-gray-900"
               >
-                <Minus size={20} aria-hidden="true" className="shrink-0 text-gray-500" />
+                <CircleX size={20} aria-hidden="true" className="shrink-0 text-gray-500" />
                 {plansSection.notIncludedTitle}
               </h3>
               <ul aria-labelledby={NOT_INCLUDED_ID} className="mt-4 space-y-2.5">
                 {plansSection.notIncluded.map((item) => (
                   <li key={item} className="flex gap-3 text-[15px] leading-snug text-gray-700">
-                    <Minus size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-gray-400" />
+                    <X size={16} aria-hidden="true" className="mt-1 shrink-0 text-gray-400" />
                     <span>{item}</span>
                   </li>
                 ))}

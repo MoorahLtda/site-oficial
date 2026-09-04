@@ -78,7 +78,8 @@ test.describe("Landing Moorah Telemedicina", () => {
   test("nenhum texto visivel contem travessao", async ({ page }) => {
     await page.goto("/");
     const text = await page.locator("body").innerText();
-    expect(text).not.toContain("—");
+    // Travessao (U+2014) como escape: o caractere nao pode existir nem no codigo.
+    expect(text).not.toContain("\u2014");
   });
 });
 
