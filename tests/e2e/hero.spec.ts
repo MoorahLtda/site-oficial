@@ -30,6 +30,9 @@ test.describe("Hero: Constelacao de cuidado", () => {
   test("o bloco plum comeca abaixo do header", async ({ page, isMobile }) => {
     test.skip(isMobile, "medida do header fixo em desktop");
     await page.goto("/");
+    // Espera os dois elementos estarem pintados antes de medir (boundingBox nao espera sozinho).
+    await expect(page.locator("header")).toBeVisible();
+    await expect(page.locator("#inicio [data-hero-block]")).toBeVisible();
     const header = await page.locator("header").boundingBox();
     const block = await page.locator("#inicio [data-hero-block]").boundingBox();
     expect(header).not.toBeNull();
@@ -75,10 +78,12 @@ test.describe("Hero: Constelacao de cuidado", () => {
   test("a frase alterna sozinha", async ({ page }) => {
     await page.goto("/");
     const rotating = page.locator("h1 [data-hero-rotating]");
-    // Le o indice atual em vez de exigir o zero, e espera qualquer troca.
+    // Le o indice atual em vez de exigir o zero, e espera qualquer troca. A troca so comeca depois
+    // da hidratacao (2,8 s por frase); com 4 workers e a rede do hero animando, a hidratacao chega a
+    // levar varios segundos, por isso a folga de 15 s.
     const first = await rotating.getAttribute("data-phrase");
     expect(first).not.toBeNull();
-    await expect(rotating).not.toHaveAttribute("data-phrase", first ?? "0", { timeout: 8_000 });
+    await expect(rotating).not.toHaveAttribute("data-phrase", first ?? "0", { timeout: 15_000 });
   });
 
   test("o titulo nao muda de altura quando a frase troca", async ({ page }) => {
@@ -108,17 +113,21 @@ test.describe("Hero: Constelacao de cuidado", () => {
       // Nenhum texto, chip ou simbolo sobre a foto (restricao dura 1).
       expect((await disc.innerText()).trim()).toBe("");
     }
-    // Sem priority: nenhuma foto do hero e preanunciada no head (as imagens do header continuam).
-    await expect(
-      page.locator('head link[rel="preload"][as="image"][imagesrcset*="pexels"]'),
-    ).toHaveCount(0);
+    // Sem priority. Next 16 preanuncia toda imagem eager, entao so as tres fotos visiveis podem
+    // aparecer no head; as escondidas sao lazy e nao entram.
+    const preloads = page.locator('head link[rel="preload"][as="image"][imagesrcset*="pexels"]');
+    expect(await preloads.count()).toBeLessThanOrEqual(3);
   });
 
   test("um compasso acende o no do evento", async ({ page }) => {
     await page.goto("/");
-    const svg = page.locator("#inicio svg[data-trail-cluster]");
-    // events[0] acende o no 2 em 4,2 s (mais a hidratacao); o estado dura 1,6 s e o polling pega.
-    await expect(svg).toHaveAttribute("data-active", "2", { timeout: 12_000 });
+    // events[0] acende o no 2 em 4,2 s (mais a hidratacao) e o estado dura 1,6 s. waitForSelector
+    // observa mutacoes do DOM, entao pega a janela mesmo com a maquina carregada (o polling de
+    // toHaveAttribute chegou a perder).
+    await page.waitForSelector('#inicio svg[data-trail-cluster][data-active="2"]', {
+      state: "attached",
+      timeout: 12_000,
+    });
   });
 
   test("o simbolo da marca fica sobre o hub da rede, sem entrar na leitura", async ({ page }) => {

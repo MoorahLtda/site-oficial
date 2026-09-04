@@ -6,7 +6,8 @@ test.describe("Planos", () => {
     await page.goto("/#planos");
     const planos = page.locator("#planos");
     await planos.getByRole("radio", { name: "2" }).click();
-    await expect(planos.getByText(/48,95/)).toBeVisible({ timeout: 2_000 });
+    // Timeout padrao (10 s): sob carga a secao dinamica e a hidratacao chegam a passar de 2 s.
+    await expect(planos.getByText(/48,95/)).toBeVisible();
   });
 
   test("escolher 1 pessoa destaca o Individual e mostra a dica", async ({ page }) => {

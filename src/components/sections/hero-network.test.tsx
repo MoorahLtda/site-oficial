@@ -74,9 +74,12 @@ describe("HeroNetwork", () => {
     expect(screen.getByAltText(photos.familiaSofa.alt)).toBeInTheDocument();
     expect(screen.getByAltText(photos.heroPaciente.alt)).toBeInTheDocument();
 
-    // Fotos eager, sem priority (o h1 e o LCP; nenhum preload de foto compete com as fontes).
+    // Sem priority (o h1 e o LCP). Next 16 preanuncia toda imagem eager, entao so a foto visivel
+    // de cada disco e eager; a escondida fica lazy. O simbolo do hub tambem nao e lazy.
     expect(document.querySelectorAll('img[fetchpriority="high"]')).toHaveLength(0);
-    expect(document.querySelectorAll('img[loading="lazy"]')).toHaveLength(0);
+    expect(document.querySelectorAll('[data-photo-current] img[loading="lazy"]')).toHaveLength(0);
+    expect(document.querySelectorAll('[data-photo-node] img[loading="lazy"]')).toHaveLength(3);
+    expect(document.querySelector("[data-hero-mark] img")).not.toHaveAttribute("loading", "lazy");
 
     const svg = getSvg();
     expect(svg).toHaveAttribute("data-tone", "plum");

@@ -133,7 +133,8 @@ export function Header() {
         inert={scrolled}
         className={cn(
           "hidden overflow-hidden border-b border-gray-200/80 bg-gray-50 transition-[height,opacity] duration-250 ease-out-expo md:block",
-          scrolled ? "h-0 opacity-0" : "h-8 opacity-100",
+          // border-b-0 junto: com h-0 a borda ainda ocuparia 1 px.
+          scrolled ? "h-0 border-b-0 opacity-0" : "h-8 opacity-100",
         )}
       >
         <Container>

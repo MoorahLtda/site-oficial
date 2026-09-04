@@ -259,12 +259,17 @@ export function HeroNetwork({ className }: { className?: string }) {
                         : { delay: PHOTO_SWAP_DELAY, duration: 0.9, ease: EASE_IN_OUT_SOFT }
                     }
                   >
+                    {/*
+                      Next 16 preanuncia no head toda imagem eager, nao so as priority. Por isso
+                      so a foto visivel e eager (3 preloads pequenos); a escondida fica lazy e
+                      carrega logo depois do layout, sem competir com as fontes.
+                    */}
                     <Image
                       src={source.src}
                       alt={current ? source.alt : ""}
                       fill
                       sizes={PHOTO_SIZES}
-                      loading="eager"
+                      loading={current ? "eager" : "lazy"}
                       className="object-cover"
                       style={{ objectPosition: photo.position }}
                     />
