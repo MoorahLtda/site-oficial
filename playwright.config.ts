@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+const channel = process.env.CI ? undefined : "msedge";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -17,10 +18,11 @@ export default defineConfig({
     trace: "retain-on-failure",
     locale: "pt-BR",
   },
-  // Usa o Edge ja instalado no Windows; nao exige download de navegador.
+  // Local: usa o Edge ja instalado no Windows, sem download de navegador.
+  // CI (Linux): Chromium do Playwright (`npx playwright install --with-deps chromium`).
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Edge"], channel: "msedge" } },
-    { name: "mobile", use: { ...devices["Pixel 7"], channel: "msedge" } },
+    { name: "desktop", use: { ...devices["Desktop Edge"], channel } },
+    { name: "mobile", use: { ...devices["Pixel 7"], channel } },
   ],
   webServer: {
     command: "npm run build && npm run start",

@@ -1,0 +1,60 @@
+# Pipeline de qualidade. Bloqueia merge (via protecao da branch main) quando algo falha.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Lint, tipos, testes unitarios e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Commitlint nos commits da PR (Conventional Commits)
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Biome
+        run: npm run lint
+      - name: Tipos
+        run: npm run typecheck
+      - name: Vitest
+        run: npm test
+      - name: Build de producao
+        run: npm run build
+      - name: Dependencias vulneraveis (high ou acima)
+        run: npm run audit:deps
+
+  e2e:
+    name: Playwright (desktop e mobile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: qualidade
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

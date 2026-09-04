@@ -38,8 +38,13 @@ lucide-react + Radix (accordion/dialog). Testes: Vitest + Testing Library e Play
 - Conventional Commits (feat, fix, chore, docs, test, refactor) validados por Commitlint no hook
   `.githooks/commit-msg` (ativado por `git config core.hooksPath .githooks`, roda no `npm install`
   via script `prepare`).
-- Quando o projeto tiver repositorio no GitHub: uma issue por tarefa, PR referenciando a issue,
-  review automatico de PR bloqueando merge em falha critica.
+- Repositorio: https://github.com/MoorahLtda/site-oficial (branch principal `main`). Uma issue por
+  tarefa (correcao, melhoria ou funcao nova); trabalho em branch `tipo/descricao-curta`; PR com
+  "Closes #n" no corpo (template em `.github/pull_request_template.md`). A CI
+  (`.github/workflows/ci.yml`: Commitlint, Biome, tipos, Vitest, build, npm audit e Playwright) e
+  obrigatoria; a protecao da branch `main` deve exigir os dois jobs verdes antes do merge.
+- Nesta maquina o `gh` (GitHub CLI) nao esta instalado: issues e PRs saem pela web ou depois de
+  `winget install GitHub.cli` e `gh auth login`.
 - TDD: escreva o teste antes da implementacao. Unitarios em `src/**/*.test.tsx`; e2e em
   `tests/e2e/*.spec.ts`.
 - Antes de commitar: `npm run check` (Biome + typecheck + Vitest). E2E: `npm run test:e2e`.
