@@ -4,8 +4,8 @@ import { formatBRL, hero, heroDynamic, photos, plans, specialties } from "@/cont
 import { renderWithMotion } from "@/test/render";
 import { Hero } from "./hero";
 
-// O IntersectionObserver de tests/setup.ts nunca dispara. Com reduced motion o palco
-// renderiza o estado final (no confirmado, cards visiveis) sem timers.
+// O IntersectionObserver de tests/setup.ts nunca dispara. Com reduced motion a rede renderiza o
+// estado final (no confirmado, primeira foto em cada disco) sem timers.
 vi.mock("motion/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("motion/react")>();
   return { ...actual, useInView: () => true, useReducedMotion: () => true };
@@ -13,8 +13,10 @@ vi.mock("motion/react", async (importOriginal) => {
 
 // Intl usa NBSP entre "R$" e o valor; normalizamos para comparar.
 function plain(text: string | null | undefined): string {
-  return (text ?? "").replace(/ /g, " ");
+  return (text ?? "").replace(/ /g, " ");
 }
+
+const PLUM_GRADIENT = "bg-[linear-gradient(160deg,var(--color-ink),var(--color-berry-950))]";
 
 describe("Hero", () => {
   it("renderiza um unico h1 com hero.title e a section #inicio rotulada por ele", () => {
@@ -32,75 +34,84 @@ describe("Hero", () => {
     expect(screen.getByText(hero.lead)).toBeInTheDocument();
   });
 
-  it("titulo em duas linhas: a estatica e a primeira frase do rodizio, ja no primeiro render", () => {
+  it("titulo em duas linhas: a estatica e a primeira frase do rodizio em berry-200, ja no primeiro render", () => {
     renderWithMotion(<Hero />);
     const heading = screen.getAllByRole("heading", { level: 1 })[0];
     expect(screen.getByText(heroDynamic.titleStatic)).toBeInTheDocument();
     const rotating = heading?.querySelector("[data-hero-rotating]");
     expect(rotating).toHaveAttribute("data-phrase", "0");
-    expect(rotating?.querySelector("[data-rotating-active]")).toHaveTextContent(
-      heroDynamic.rotating[0],
-    );
+    const active = rotating?.querySelector("[data-rotating-active]");
+    expect(active).toHaveTextContent(heroDynamic.rotating[0]);
+    // Sobre plum a frase e berry-200 solida (o gradiente da marca morre no escuro).
+    expect(active).toHaveClass("text-berry-200");
+    expect(active).not.toHaveClass("text-gradient-berry");
     // O bloco visivel do titulo e decorativo; quem le e o sr-only.
     expect(rotating).toHaveAttribute("aria-hidden", "true");
     expect(screen.getByText(heroDynamic.titleStatic)).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("faixa de especialidades rotulada por heroDynamic.stripLabel com os 12 nomes", () => {
+  it("CTA primario branco leva a #planos e o secundario em contorno a #como-funciona", () => {
     renderWithMotion(<Hero />);
-    const strip = screen.getByRole("group", { name: heroDynamic.stripLabel });
-    expect(strip).toBeInTheDocument();
-    expect(specialties).toHaveLength(12);
-    for (const specialty of specialties) {
-      expect(strip).toHaveTextContent(specialty.name);
-    }
+    const primary = screen.getByRole("link", { name: hero.primaryCta });
+    expect(primary).toHaveAttribute("href", "#planos");
+    expect(primary).toHaveClass("bg-white", "text-ink");
+    const secondary = screen.getByRole("link", { name: hero.secondaryCta });
+    expect(secondary).toHaveAttribute("href", "#como-funciona");
+    expect(secondary).toHaveClass("border-berry-300");
   });
 
-  it("a foto do paciente e a base do palco, com alt do manifesto", () => {
-    renderWithMotion(<Hero />);
-    const photo = screen.getByAltText(photos.heroPaciente.alt);
-    expect(photo).toHaveAttribute("sizes", "(min-width: 1024px) 440px, 80vw");
-  });
-
-  it("CTA primario leva a #planos e o secundario a #como-funciona", () => {
-    renderWithMotion(<Hero />);
-    expect(screen.getByRole("link", { name: hero.primaryCta })).toHaveAttribute("href", "#planos");
-    expect(screen.getByRole("link", { name: hero.secondaryCta })).toHaveAttribute(
-      "href",
-      "#como-funciona",
-    );
-  });
-
-  it("mostra o preco do primeiro plano na linha de preco, em mono", () => {
+  it("mostra o preco do primeiro plano na linha de preco, em mono berry-200", () => {
     renderWithMotion(<Hero />);
     const price = formatBRL(plans[0].priceCents);
     const line = screen.getByText(/A partir de/);
     expect(plain(line.textContent)).toContain(plain(price));
     const mono = line.querySelector(".font-mono");
     expect(plain(mono?.textContent)).toBe(plain(price));
+    expect(mono).toHaveClass("text-berry-200");
   });
 
-  it("trust line avisa que nao e plano de saude e o cluster e uma imagem rotulada", () => {
+  it("trust line, rede plum rotulada com tres discos de foto sem nada por cima, e nenhum card", () => {
     renderWithMotion(<Hero />);
     expect(screen.getByText(hero.trust)).toHaveTextContent(/não é plano de saúde/);
+
     const cluster = screen.getByRole("img", { name: hero.clusterAlt });
     expect(cluster.tagName.toLowerCase()).toBe("svg");
+    expect(cluster).toHaveAttribute("data-tone", "plum");
     // Sob reduced motion o no 0 (Clinico geral) ja nasce confirmado em leaf.
     expect(cluster.querySelector('[data-node="0"]')).toHaveAttribute("data-state", "confirmed");
+
+    const discs = document.querySelectorAll("[data-photo-node]");
+    expect(discs).toHaveLength(3);
+    for (const element of discs) {
+      expect(element.textContent).toBe("");
+    }
+    expect(screen.getByAltText(photos.medicaSorrindo.alt)).toBeInTheDocument();
+    expect(screen.getByAltText(photos.familiaSofa.alt)).toBeInTheDocument();
+    expect(screen.getByAltText(photos.heroPaciente.alt)).toBeInTheDocument();
+
+    // Nenhum card de momento (v2) e nenhuma foto com preload: o h1 e o LCP.
+    expect(document.querySelector("[data-moment]")).not.toBeInTheDocument();
+    expect(document.querySelectorAll('img[fetchpriority="high"]')).toHaveLength(0);
   });
 
-  it("chips de prova e cards flutuantes: chips em lista rotulada, cards fora da arvore acessivel", () => {
+  it("faixa de especialidades em plum, colofao mono sem Badge, bloco com o gradiente e nenhum h2", () => {
     renderWithMotion(<Hero />);
+    const strip = screen.getByRole("group", { name: heroDynamic.stripLabel });
+    expect(specialties).toHaveLength(12);
+    for (const specialty of specialties) {
+      expect(strip).toHaveTextContent(specialty.name);
+    }
+    expect(screen.getAllByText(specialties[0].name)[0]).toHaveClass("bg-white/10");
+
     const list = screen.getByRole("list", { name: "Resumo da assinatura" });
+    expect(list.querySelectorAll("li")).toHaveLength(hero.proofChips.length);
     for (const chip of hero.proofChips) {
       expect(list).toHaveTextContent(chip);
     }
-    // Tres cards desktop + um card estatico mobile, todos aria-hidden (ilustracao).
-    const cards = document.querySelectorAll("[data-moment]");
-    expect(cards).toHaveLength(hero.moments.length + 1);
-    for (const card of cards) {
-      expect(card).toHaveAttribute("aria-hidden", "true");
-    }
+    expect(list).toHaveClass("font-mono", "uppercase");
+    expect(list.querySelector(".rounded-full")).toBeNull();
+
+    expect(document.querySelector("[data-hero-block]")).toHaveClass(PLUM_GRADIENT);
     expect(screen.queryByRole("heading", { level: 2 })).not.toBeInTheDocument();
   });
 });

@@ -24,8 +24,8 @@ import { cn } from "@/lib/utils";
     nome vive no alt do wordmark (um <img> nomeado), aqui viveria no grupo via `label` (role="img"
     com alt vazio nas duas pecas). Os dois caminhos sao validos, mas trocar muda qual elemento
     carrega o nome e o teste do rodape afirma "exatamente um img com nome acessivel".
-  - hero-stage.tsx: e so o simbolo dentro de um disco branco, sem a palavra. O primitivo sempre
-    desenha as duas pecas, entao nao serve, e nem deveria.
+  - hero-network.tsx: e so o simbolo dentro do disco branco do hub, sem a palavra. O primitivo
+    sempre desenha as duas pecas, entao nao serve, e nem deveria.
 */
 
 // Dimensoes reais dos arquivos em public/brand: o next/image reserva o espaco pelo aspect-ratio.

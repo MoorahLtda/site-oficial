@@ -1,38 +1,55 @@
 import { ArrowRight } from "lucide-react";
 import { Icon } from "@/components/icons";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Section } from "@/components/ui/section";
 import { formatBRL, hero, heroDynamic, plans } from "@/content/site";
 import { HeroMarquee } from "./hero-marquee";
+import { HeroNetwork } from "./hero-network";
 import { RotatingWord } from "./hero-rotating";
-import { HeroStage } from "./hero-stage";
 
 /*
-  Hero "Trilha da Amora" (docs/design-brief.md 5.3 e docs/design-brief-v2.md 3). Server
-  Component: o texto e o LCP e sai pronto do servidor, sem animacao de entrada. So o palco
-  (HeroStage) e a segunda linha do titulo (RotatingWord) sao cliente.
+  Hero v3 "Constelacao de cuidado" (docs/design-brief-v3-hero.md, secao 7). Bloco plum inserido
+  com margem (a aplicacao principal da marca), coluna de texto a esquerda e a Trilha da Amora em
+  grande escala a direita, com fotos dentro dos nos. Server Component: o h1 e todo o texto saem
+  prontos do servidor (o h1 e o LCP); so a rede (HeroNetwork) e a segunda linha do titulo
+  (RotatingWord) sao cliente.
 
   O h1 tem duas linhas visiveis (heroDynamic.titleStatic e a frase que alterna), ambas
   aria-hidden, e a frase completa (hero.title) em sr-only para leitores de tela.
+
+  Medidas (7.2): pt = altura real do header fixo (64 / 96 / 104 px) + 16 px; em lg o bloco fecha
+  na dobra (100svh menos pt e pb) e a linha da faixa vai para o rodape do bloco. A rede sangra 6 %
+  para a direita, dentro do padding do bloco; overflow-hidden no bloco e overflow-x-clip na
+  section garantem zero rolagem horizontal.
 */
 
-const H1_CLASSES =
-  "mt-4 font-display font-extrabold tracking-[-0.03em] leading-[1.02] text-[2.75rem] sm:text-5xl lg:text-6xl xl:text-7xl text-gray-900 text-balance";
+const PLUM_GRADIENT = "bg-[linear-gradient(160deg,var(--color-ink),var(--color-berry-950))]";
 
-// pt/pb repetidos por breakpoint porque o Section traz py-20 sm:py-24 lg:py-28 e o twMerge
-// nao remove py-* quando chega so pt-*/pb-*; dentro do mesmo breakpoint pt/pb vencem o py.
-// overflow-x-clip: a aureola (inset -14%) e os cards flutuantes sangram de proposito para fora do
-// palco; sem o corte no limite da secao isso vira rolagem horizontal no mobile.
-const SECTION_CLASSES =
-  "flex min-h-[88svh] items-center overflow-x-clip pt-28 pb-16 sm:pt-28 sm:pb-16 lg:pt-36 lg:pb-24";
+// Peso 700 (specimen do manual). Tamanhos escolhidos para "Consultas medicas" caber em uma linha
+// na coluna de 6/12 em cada breakpoint (7.9): 40 / 52 / 44 / 56 / 68 px (lg e xl recuaram um passo: em 1024 e 1280 "Consultas medicas" quebrava).
+const H1_CLASSES =
+  "mt-4 font-display font-bold tracking-[-0.03em] leading-[1.02] text-balance text-white text-[2.5rem] sm:text-[3.25rem] lg:text-[2.75rem] xl:text-[3.5rem] 2xl:text-[4.25rem]";
+
+// O anel de foco global (berry-500/50) some sobre plum; aqui ele e branco.
+const CTA_CLASSES = "w-full focus-visible:outline-white/70 sm:w-auto";
+
+// Colofao: rotulo de sistema do manual (mono, caixa alta), separado por "·" via CSS content,
+// que nao entra na leitura. Sem Badge, sem ponto colorido.
+const COLOPHON_CLASSES =
+  "flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.18em] text-berry-200 [&>li+li]:before:mr-3 [&>li+li]:before:text-berry-400 [&>li+li]:before:content-['·']";
+
+// Rede: no mobile centrada e ate 420 px; em lg sai do fluxo, centrada na vertical, mede
+// min(44vw, 620px) e sangra 6 % para a direita (cai no padding do bloco).
+const NETWORK_CLASSES =
+  "relative mx-auto aspect-square w-full max-w-[420px] lg:absolute lg:top-1/2 lg:right-[-6%] lg:w-[min(44vw,620px)] lg:max-w-none lg:-translate-y-1/2 2xl:w-[680px]";
 
 function PriceLine() {
   const [before = "", after = ""] = hero.priceLine.split("{price}");
   return (
-    <p className="mt-3 font-display text-base font-semibold text-gray-900">
+    <p className="mt-3 font-display text-base font-semibold text-white">
       {before}
-      <span className="font-mono">{formatBRL(plans[0].priceCents)}</span>
+      <span className="font-mono text-berry-200 tabular-nums">
+        {formatBRL(plans[0].priceCents)}
+      </span>
       {after}
     </p>
   );
@@ -40,72 +57,71 @@ function PriceLine() {
 
 export function Hero() {
   return (
-    <Section
+    <section
       id="inicio"
-      surface="light"
       aria-labelledby="inicio-titulo"
-      className={SECTION_CLASSES}
-      innerClassName="grid items-center gap-12 lg:grid-cols-12 lg:gap-8"
+      className="scroll-mt-20 overflow-x-clip px-3 pt-20 pb-3 sm:px-4 md:pt-28 lg:px-6 lg:pt-[7.5rem]"
     >
-      <div className="lg:col-span-6">
-        <p className="eyebrow flex items-center gap-3">
-          <span aria-hidden="true" className="h-px w-6 shrink-0 bg-berry-300" />
-          {hero.eyebrow}
-        </p>
-        <h1 id="inicio-titulo" className={H1_CLASSES}>
-          <span className="sr-only">{hero.title}</span>
-          <span aria-hidden="true" className="block">
-            {heroDynamic.titleStatic}
-          </span>
-          <RotatingWord />
-        </h1>
-        <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-gray-600 sm:text-xl">
-          {hero.lead}
-        </p>
-        <PriceLine />
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button variant="primary" size="lg" asChild className="w-full sm:w-auto">
-            <a href="#planos">{hero.primaryCta}</a>
-          </Button>
-          <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto">
-            <a href="#como-funciona">
-              {hero.secondaryCta}
-              <ArrowRight size={18} aria-hidden="true" />
-            </a>
-          </Button>
-        </div>
-
-        <p className="mt-6 flex max-w-[34rem] items-start gap-2 text-sm text-gray-600">
-          <Icon name="shield-check" size={18} className="mt-0.5 shrink-0 text-berry-600" />
-          {hero.trust}
-        </p>
-      </div>
-
-      <div className="relative lg:col-span-6">
-        <HeroStage />
-      </div>
-
-      {/* mt pequeno porque o gap da grade (48 px / 32 px em lg) ja separa; total de 56 px. */}
-      <ul
-        aria-label="Resumo da assinatura"
-        className="mt-2 flex flex-wrap gap-2 lg:col-span-12 lg:mt-6"
+      <div
+        data-hero-block=""
+        className={`relative isolate overflow-hidden rounded-3xl text-white ${PLUM_GRADIENT}`}
       >
-        {hero.proofChips.map((chip) => (
-          <li key={chip}>
-            <Badge
-              tone="neutral"
-              size="md"
-              icon={<span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-berry-500" />}
-            >
-              {chip}
-            </Badge>
-          </li>
-        ))}
-      </ul>
+        {/*
+          grid-cols-[minmax(0,1fr)] no mobile: sem ele a coluna implicita (auto) cresce ate o
+          max-content da faixa de especialidades (~3900 px) e o bloco inteiro vaza na horizontal.
+        */}
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)] items-center gap-10 px-5 pt-10 pb-8 sm:px-10 sm:pt-14 lg:min-h-[calc(100svh-8.25rem)] lg:grid-cols-12 lg:grid-rows-[1fr_auto] lg:gap-x-8 lg:gap-y-8 lg:px-14 lg:py-12 xl:px-20">
+          <div data-hero-copy="" className="relative z-10 lg:col-span-6">
+            <p className="eyebrow text-berry-300">{hero.eyebrow}</p>
+            <h1 id="inicio-titulo" className={H1_CLASSES}>
+              <span className="sr-only">{hero.title}</span>
+              <span aria-hidden="true" className="block">
+                {heroDynamic.titleStatic}
+              </span>
+              <RotatingWord tone="plum" />
+            </h1>
+            <p className="mt-5 max-w-[34rem] text-base leading-relaxed text-berry-100 sm:text-lg 2xl:text-xl">
+              {hero.lead}
+            </p>
+            <PriceLine />
 
-      {/* Faixa continua de especialidades, fechando o hero (brief v2, item 3). */}
-      <HeroMarquee className="mt-2 lg:col-span-12 lg:mt-4" />
-    </Section>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Button variant="plum" size="lg" asChild className={CTA_CLASSES}>
+                <a href="#planos">{hero.primaryCta}</a>
+              </Button>
+              <Button variant="outline-light" size="lg" asChild className={CTA_CLASSES}>
+                <a href="#como-funciona">
+                  {hero.secondaryCta}
+                  <ArrowRight size={18} aria-hidden="true" />
+                </a>
+              </Button>
+            </div>
+
+            <p className="mt-5 flex max-w-[34rem] items-start gap-2 text-sm leading-relaxed text-berry-100/85">
+              <Icon name="shield-check" size={18} className="mt-0.5 shrink-0 text-leaf-300" />
+              {hero.trust}
+            </p>
+          </div>
+
+          <div className="relative lg:col-span-6 lg:min-h-[560px]">
+            <HeroNetwork className={NETWORK_CLASSES} />
+          </div>
+
+          {/* Linha da faixa: colofao a esquerda e especialidades ocupando o resto (lg+). */}
+          <div className="flex min-w-0 flex-col gap-5 lg:col-span-12 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8">
+            <ul
+              data-hero-colophon=""
+              aria-label="Resumo da assinatura"
+              className={COLOPHON_CLASSES}
+            >
+              {hero.proofChips.map((chip) => (
+                <li key={chip}>{chip}</li>
+              ))}
+            </ul>
+            <HeroMarquee tone="plum" speed={64} className="min-w-0" />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

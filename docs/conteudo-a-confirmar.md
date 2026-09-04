@@ -127,3 +127,17 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
   produto antes do lancamento.
 - **Contraste**: `gray-500`, `leaf-500` e `critical-500` nunca sao usados como texto pequeno (falham
   AA); se a marca pedir outro uso, e preciso trocar o tom.
+
+## Hero v3 (Constelacao de cuidado, 03/09/2026)
+
+- **`hero.moments` e o tipo `HeroMoment`** ficam sem uso; `heroDynamic.events[].label/text/icon`
+  ficam sem uso no hero (so `node` e lido, como cadencia da rede). Manter por enquanto; remover em
+  rodada de conteudo.
+- **`src/app/loading.tsx`** desenha um esqueleto de hero claro; em navegacao cliente ha salto de claro
+  para plum. Ajustar o esqueleto quando o hero estabilizar.
+- **Fotos dos discos** sao placeholders do Pexels; em circulo pequeno a cara de banco de imagens
+  aparece mais. Fotos proprias enquadradas para circulo (rosto centrado, fundo limpo) melhoram muito.
+- **`medicaHeadset`** repete a foto do CTA final. Alternativa: `medicoVideo` com objectPosition
+  ~45% 35%, conferindo o recorte.
+- **Header transparente sobre plum** so fica em risco se o `pt` do hero cair abaixo da altura do
+  header + 16 px (64 / 96 / 104 px hoje, com a faixa legal em md+). Documentado em `hero.tsx`.

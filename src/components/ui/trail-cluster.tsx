@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 export type TrailClusterVariant = "full" | "mini" | "outline";
 export type TrailClusterAnimate = "intro" | "draw" | "static";
 export type TrailNodeState = "idle" | "active" | "confirmed";
+// light = sobre superficie clara (padrao); plum = sobre o bloco escuro do hero.
+export type TrailClusterTone = "light" | "plum";
 
 export interface TrailClusterProps {
   // full = hero; mini = especialidades; outline = CTA final (so traco).
@@ -30,6 +32,11 @@ export interface TrailClusterProps {
   // Cometas continuos correndo pelas trilhas (CSS animate-comet; a media query de
   // reduced-motion em globals.css ja zera). Padrao false.
   comets?: boolean;
+  // Paleta. light e o padrao (Especialidades e Contato nao mudam); plum e a do hero v3.
+  tone?: TrailClusterTone;
+  // Indice do no -> raio novo. O circulo desse no cresce e vira o anel de um disco de foto
+  // posicionado por cima em HTML (ver hero-network.tsx e TRAIL_NODES).
+  emphasis?: Readonly<Partial<Record<number, number>>>;
   className?: string;
 }
 
@@ -64,15 +71,64 @@ const NODES: readonly TrailNodeGeometry[] = [
 
 const INNER_COUNT = NODES.filter((node) => node.ring === "inner").length;
 
-const COLOR = {
-  trail: "var(--color-berry-300)",
-  ink: "var(--color-ink)",
-  idle: "var(--color-berry-100)",
-  active: "var(--color-berry-500)",
-  confirmed: "var(--color-leaf-500)",
-  hubFrom: "var(--color-berry-500)",
-  hubTo: "var(--color-berry-700)",
-} as const;
+// Lado do viewBox. O HTML que se sobrepoe ao svg converte coordenadas em % dividindo por ele.
+export const TRAIL_SIZE = 560;
+
+// Centro e raio padrao de cada no, na ordem de `specialties`.
+export const TRAIL_NODES: readonly { cx: number; cy: number; r: number }[] = NODES.map(
+  ({ cx, cy, r }) => ({ cx, cy, r }),
+);
+
+interface TrailPalette {
+  trail: string;
+  nodeStroke: string;
+  idle: string;
+  // Trilha do no aceso.
+  active: string;
+  // Fill do no aceso.
+  activeNode: string;
+  confirmed: string;
+  pad: string;
+  // Cometas (a variante outline continua usando `trail`).
+  comet: string;
+  // Anel dos nos com `emphasis`.
+  emphasisFill: string;
+  emphasisStroke: string;
+  hubFrom: string;
+  hubTo: string;
+}
+
+// Sempre var(--color-...): as cores acompanham o tema (docs/design-brief-v3-hero.md, 7.4).
+const PALETTE: Record<TrailClusterTone, TrailPalette> = {
+  light: {
+    trail: "var(--color-berry-300)",
+    nodeStroke: "var(--color-ink)",
+    idle: "var(--color-berry-100)",
+    active: "var(--color-berry-500)",
+    activeNode: "var(--color-berry-500)",
+    confirmed: "var(--color-leaf-500)",
+    pad: "var(--color-ink)",
+    comet: "var(--color-berry-500)",
+    emphasisFill: "var(--color-berry-100)",
+    emphasisStroke: "var(--color-ink)",
+    hubFrom: "var(--color-berry-500)",
+    hubTo: "var(--color-berry-700)",
+  },
+  plum: {
+    trail: "var(--color-berry-500)",
+    nodeStroke: "var(--color-berry-400)",
+    idle: "var(--color-berry-800)",
+    active: "var(--color-berry-300)",
+    activeNode: "var(--color-berry-400)",
+    confirmed: "var(--color-leaf-400)",
+    pad: "var(--color-berry-400)",
+    comet: "var(--color-berry-300)",
+    emphasisFill: "var(--color-berry-900)",
+    emphasisStroke: "var(--color-berry-300)",
+    hubFrom: "var(--color-berry-500)",
+    hubTo: "var(--color-berry-700)",
+  },
+};
 
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 const EASE_IN_OUT_SOFT = [0.65, 0, 0.35, 1] as const;
@@ -146,10 +202,16 @@ function nodeState(index: number, active: number | null, confirmed: number | nul
   return "idle";
 }
 
-function nodeFill(state: TrailNodeState, variant: TrailClusterVariant): string {
-  if (state === "confirmed") return COLOR.confirmed;
-  if (state === "active") return COLOR.active;
-  return variant === "outline" ? "none" : COLOR.idle;
+function nodeFill(
+  state: TrailNodeState,
+  variant: TrailClusterVariant,
+  palette: TrailPalette,
+  emphasized: boolean,
+): string {
+  if (state === "confirmed") return palette.confirmed;
+  if (state === "active") return palette.activeNode;
+  if (variant === "outline") return "none";
+  return emphasized ? palette.emphasisFill : palette.idle;
 }
 
 export function TrailCluster({
@@ -159,8 +221,11 @@ export function TrailCluster({
   confirmed = null,
   label,
   comets = false,
+  tone = "light",
+  emphasis,
   className,
 }: TrailClusterProps) {
+  const palette = PALETTE[tone];
   const ref = useRef<SVGSVGElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
   // null no servidor; so `true` desliga a cascata.
@@ -182,8 +247,9 @@ export function TrailCluster({
   const confirmedReady = mode !== "intro" || introDone;
   const confirmedIndex = confirmedReady ? confirmed : null;
   const isOutline = variant === "outline";
-  const nodeStroke = isOutline ? COLOR.trail : COLOR.ink;
-  const padFill = isOutline ? COLOR.trail : COLOR.ink;
+  const nodeStroke = isOutline ? palette.trail : palette.nodeStroke;
+  const padFill = isOutline ? palette.trail : palette.pad;
+  const cometStroke = isOutline ? palette.trail : palette.comet;
   const drawTarget = mode === "draw" && !(inView || reduced) ? 0 : 1;
   const animated = mode !== "static";
   const confirmedNode = confirmedIndex === null ? undefined : NODES[confirmedIndex];
@@ -200,14 +266,15 @@ export function TrailCluster({
       data-trail-cluster=""
       data-variant={variant}
       data-animate={mode}
+      data-tone={tone}
       data-active={active ?? undefined}
       className={cn("block h-auto w-full overflow-visible", className)}
     >
       {isOutline ? null : (
         <defs>
           <radialGradient id={gradientId} cx="50%" cy="40%" r="65%">
-            <stop offset="0%" stopColor={COLOR.hubFrom} />
-            <stop offset="100%" stopColor={COLOR.hubTo} />
+            <stop offset="0%" stopColor={palette.hubFrom} />
+            <stop offset="100%" stopColor={palette.hubTo} />
           </radialGradient>
         </defs>
       )}
@@ -216,7 +283,7 @@ export function TrailCluster({
         {NODES.map((node, index) => {
           const state = nodeState(index, active, confirmedIndex);
           const lit = state === "active";
-          const stroke = lit ? COLOR.active : COLOR.trail;
+          const stroke = lit ? palette.active : palette.trail;
           const strokeWidth = lit ? 3 : 2;
           const motionProps = animated
             ? {
@@ -251,7 +318,7 @@ export function TrailCluster({
               data-comet={index}
               d={node.d}
               fill="none"
-              stroke={isOutline ? COLOR.trail : COLOR.active}
+              stroke={cometStroke}
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -287,7 +354,7 @@ export function TrailCluster({
         cy={HUB.cy}
         r={HUB.r}
         fill={isOutline ? "none" : `url(#${gradientId})`}
-        stroke={isOutline ? COLOR.trail : undefined}
+        stroke={isOutline ? palette.trail : undefined}
         strokeWidth={isOutline ? 2 : undefined}
         vectorEffect={isOutline ? "non-scaling-stroke" : undefined}
         {...(mode === "intro"
@@ -304,6 +371,8 @@ export function TrailCluster({
       <g data-nodes="">
         {NODES.map((node, index) => {
           const state = nodeState(index, active, confirmedIndex);
+          const emphasisRadius = emphasis?.[index];
+          const emphasized = emphasisRadius !== undefined;
           const motionProps =
             mode === "intro"
               ? {
@@ -318,11 +387,12 @@ export function TrailCluster({
               data-node={index}
               data-specialty={specialties[index]?.name}
               data-state={state}
+              data-emphasis={emphasized ? "true" : undefined}
               cx={node.cx}
               cy={node.cy}
-              r={node.r}
-              fill={nodeFill(state, variant)}
-              stroke={nodeStroke}
+              r={emphasisRadius ?? node.r}
+              fill={nodeFill(state, variant, palette, emphasized)}
+              stroke={emphasized ? palette.emphasisStroke : nodeStroke}
               strokeWidth={2}
               vectorEffect="non-scaling-stroke"
               className="transition-[fill,stroke] duration-200 ease-out-expo"
@@ -338,7 +408,7 @@ export function TrailCluster({
           cx={confirmedNode.cx}
           cy={confirmedNode.cy}
           r={22}
-          fill={COLOR.confirmed}
+          fill={palette.confirmed}
           className="pointer-events-none"
           initial={{ scale: 1, opacity: 0.6 }}
           animate={{ scale: INTRO.halo.scale, opacity: 0 }}

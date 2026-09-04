@@ -16,6 +16,9 @@ import { cn } from "@/lib/utils";
      da mais alta: a troca nunca mexe no layout (sem CLS), mesmo quando uma frase quebra em duas
      linhas no mobile.
   3. O bloco e aria-hidden; a frase completa fica em sr-only no h1 (hero.title).
+
+  `tone`: light usa o gradiente da marca; plum (hero v3, sobre o bloco escuro) usa berry-200
+  solido, porque o gradiente berry-500 para berry-700 morre sobre plum.
 */
 
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
@@ -23,7 +26,19 @@ const PHRASES = heroDynamic.rotating;
 const DURATION = 0.45;
 const SHIFT = 16;
 
-export function RotatingWord({ className }: { className?: string }) {
+export type RotatingWordTone = "light" | "plum";
+
+const ACTIVE_TONE: Record<RotatingWordTone, string> = {
+  light: "text-gradient-berry",
+  plum: "text-berry-200",
+};
+
+export interface RotatingWordProps {
+  tone?: RotatingWordTone;
+  className?: string;
+}
+
+export function RotatingWord({ tone = "light", className }: RotatingWordProps) {
   // null no servidor; so `true` congela a troca.
   const reduced = useReducedMotion() === true;
   const [index, setIndex] = useState(0);
@@ -57,7 +72,7 @@ export function RotatingWord({ className }: { className?: string }) {
         <m.span
           key={phrase}
           data-rotating-active=""
-          className="col-start-1 row-start-1 text-gradient-berry"
+          className={cn("col-start-1 row-start-1", ACTIVE_TONE[tone])}
           initial={{ opacity: 0, y: SHIFT }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -SHIFT }}

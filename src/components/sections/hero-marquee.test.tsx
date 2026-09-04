@@ -30,4 +30,17 @@ describe("HeroMarquee", () => {
     expect(track).toHaveClass("group-hover:[animation-play-state:paused]");
     expect(screen.getByRole("group", { name: heroDynamic.stripLabel })).toHaveClass("mt-4");
   });
+
+  it("tone plum e speed: chips translucidos, icone berry-300 e ciclo de 64 s", () => {
+    render(<HeroMarquee tone="plum" speed={64} />);
+    const chip = screen.getAllByText(specialties[0].name)[0];
+    expect(chip).toHaveClass("bg-white/10", "text-berry-100");
+    expect(chip).not.toHaveClass("bg-gray-100");
+    const icon = chip.querySelector("svg");
+    expect(icon).toHaveClass("text-berry-300");
+    const track = chip.parentElement?.parentElement as HTMLElement | null;
+    expect(track).toHaveClass("animate-marquee");
+    expect(track?.style.animationDuration).toBe("64s");
+    expect(screen.getByRole("group", { name: heroDynamic.stripLabel })).toBeInTheDocument();
+  });
 });

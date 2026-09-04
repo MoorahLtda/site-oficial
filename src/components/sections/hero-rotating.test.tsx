@@ -138,4 +138,17 @@ describe("RotatingWord", () => {
     }).not.toThrow();
     expect(document.querySelector("[data-rotating-active]")).toBeNull();
   });
+
+  it("tone plum troca o gradiente por berry-200 solido; o padrao continua em gradiente", () => {
+    const { unmount } = renderWithMotion(<RotatingWord tone="plum" />);
+    const plum = document.querySelector("[data-rotating-active]");
+    expect(plum).toHaveClass("text-berry-200");
+    expect(plum).not.toHaveClass("text-gradient-berry");
+    unmount();
+
+    renderWithMotion(<RotatingWord />);
+    const light = document.querySelector("[data-rotating-active]");
+    expect(light).toHaveClass("text-gradient-berry");
+    expect(light).not.toHaveClass("text-berry-200");
+  });
 });

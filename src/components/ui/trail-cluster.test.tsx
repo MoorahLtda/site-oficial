@@ -2,7 +2,7 @@ import { act, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { specialties } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
-import { TrailCluster } from "./trail-cluster";
+import { TRAIL_NODES, TRAIL_SIZE, TrailCluster } from "./trail-cluster";
 
 // O IntersectionObserver de tests/setup.ts nunca dispara; useInView e useReducedMotion
 // sao controlados por teste via mockReduced (ver 10.1 do brief).
@@ -264,5 +264,38 @@ describe("TrailCluster", () => {
     renderWithMotion(<TrailCluster variant="outline" animate="static" comets />);
     const comet = document.querySelector("[data-comet]");
     expect(comet?.getAttribute("stroke")).toContain("--color-berry-300");
+  });
+
+  it("tone plum troca a paleta: trilhas berry-500, nos berry-800 com contorno berry-400, cometas berry-300", () => {
+    renderWithMotion(<TrailCluster variant="full" animate="static" tone="plum" comets />);
+    expect(getSvg()).toHaveAttribute("data-tone", "plum");
+    expect(getTrail(0).getAttribute("stroke")).toContain("--color-berry-500");
+    expect(getNode(0).getAttribute("stroke")).toContain("--color-berry-400");
+    expect(getNode(0).getAttribute("fill")).toContain("--color-berry-800");
+    const comet = document.querySelector('[data-comet="0"]');
+    expect(comet?.getAttribute("stroke")).toContain("--color-berry-300");
+    const pad = document.querySelector('[data-pad="1"]');
+    expect(pad?.getAttribute("fill")).toContain("--color-berry-400");
+  });
+
+  it("emphasis cresce o raio do no indicado e o marca, sem mexer nos outros nem nas trilhas", () => {
+    renderWithMotion(<TrailCluster variant="full" animate="static" emphasis={{ 5: 52 }} />);
+    const node = getNode(5);
+    expect(node).toHaveAttribute("r", "52");
+    expect(node).toHaveAttribute("data-emphasis", "true");
+    // Em tone light o anel do disco e berry-100 com contorno ink.
+    expect(node.getAttribute("fill")).toContain("--color-berry-100");
+    expect(node.getAttribute("stroke")).toContain("--color-ink");
+    expect(getNode(6)).toHaveAttribute("r", "18");
+    expect(getNode(6)).not.toHaveAttribute("data-emphasis");
+    expect(document.querySelectorAll("[data-trail]")).toHaveLength(12);
+    expect(document.querySelectorAll("[data-pad]")).toHaveLength(8);
+  });
+
+  it("exporta o tamanho do viewBox e a geometria dos nos para o HTML posicionar por cima", () => {
+    expect(TRAIL_SIZE).toBe(560);
+    expect(TRAIL_NODES).toHaveLength(12);
+    expect(TRAIL_NODES[0]).toEqual({ cx: 280, cy: 160, r: 22 });
+    expect(TRAIL_NODES[7]).toEqual({ cx: 500, cy: 300, r: 18 });
   });
 });
