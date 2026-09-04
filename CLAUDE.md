@@ -82,6 +82,13 @@ lucide-react + Radix (accordion/dialog). Testes: Vitest + Testing Library e Play
 - **Vitest**: o boot do worker passa de 60 s neste disco; `scripts/patch-vitest-timeout.mjs` eleva o
   limite no postinstall. Rode com `--maxWorkers=1`.
 
+- **Painel de navegador do Claude Code oculto**: a aba fica em segundo plano e o `requestAnimationFrame`
+  nao roda, entao animacoes `m.*` parecem travadas no `initial` (opacidade 0, escala inicial). Nao e
+  defeito do site. Verifique movimento com Playwright (`node scripts/check-hero.cjs .shots/v3`).
+- **Grade sem `grid-cols` no mobile**: a coluna implicita (`auto`) cresce ate o max-content do item
+  mais largo (a faixa de especialidades, ~3900 px) e o bloco inteiro vaza. Declare
+  `grid-cols-[minmax(0,1fr)]` no breakpoint base. Ver `src/components/sections/hero.tsx`.
+
 ## Estrutura
 
 - `src/app/` rotas, `layout.tsx` (fontes, metadata), `globals.css`, icones e imagem OG.
