@@ -151,7 +151,7 @@ export function Header() {
                 ) : null}
                 <Link
                   href={link.href}
-                  className="font-mono text-[11px] uppercase tracking-[0.14em] text-gray-600 transition-colors duration-200 ease-out-expo hover:text-gray-900"
+                  className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors duration-200 ease-out-expo hover:text-gray-900"
                 >
                   {link.label}
                 </Link>

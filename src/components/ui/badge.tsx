@@ -5,7 +5,7 @@ export type BadgeTone = "berry" | "leaf" | "neutral" | "plum" | "critical";
 export type BadgeSize = "sm" | "md";
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  // leaf so para confirmacoes; berry para destaque comercial; critical para o bloco 192.
+  // leaf so para confirmacoes; berry para destaque comercial; critical para alertas (borda vermelha discreta).
   tone?: BadgeTone;
   size?: BadgeSize;
   // Icone ja com aria-hidden (Icon ou lucide direto).

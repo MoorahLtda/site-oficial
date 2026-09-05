@@ -13,10 +13,12 @@ lucide-react + Radix (accordion/dialog). Testes: Vitest + Testing Library e Play
 - Texto de marketing, precos e listas vivem em `src/content/site.ts`. Componentes recebem dados
   daquele arquivo; nao duplique copy dentro de componentes.
 - Tokens de marca em `src/app/globals.css` (`@theme`): cores `berry-*`, `leaf-*`, `gray-*`
-  (cinzas tingidos de ameixa), `ink`, `lilac`; fontes `font-display` (Plus Jakarta Sans),
-  `font-sans` (Manrope), `font-mono` (JetBrains Mono); raios `rounded-control|card|xl|2xl|3xl`;
-  sombras `shadow-card|float|deep|glow`; easing `ease-out-expo`; utilitarios `container-x`,
-  `eyebrow`, `skeleton`, `text-gradient-berry`.
+  (cinzas tingidos de ameixa), `ink`, `lilac`; fontes `font-display` (Plus Jakarta Sans) e
+  `font-sans` (Manrope), nada mais: nao existe `font-mono` nem JetBrains Mono, e nenhum texto da
+  interface (rotulos, numeracoes, precos, numero do cartao) pode usar fonte mono; raios
+  `rounded-control|card|xl|2xl|3xl`; sombras `shadow-card|float|deep|glow`; easing `ease-out-expo`;
+  utilitarios `container-x`, `eyebrow` (Plus Jakarta 700, 0.75rem, caixa alta, tracking 0.14em,
+  berry), `skeleton`, `text-gradient-berry`.
 - Logo: `public/brand/` (mark plum/branco, wordmark plum/branco, lockup branco, cartao).
   Nao redesenhe nem recolora o simbolo; so plum (#4B244D) ou branco.
 - Nao inventar numeros, depoimentos, logos de parceiros ou selos. Placeholders vao para

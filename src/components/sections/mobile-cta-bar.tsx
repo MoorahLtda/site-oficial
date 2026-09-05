@@ -91,7 +91,7 @@ export function MobileCtaBar({ forceVisible = false }: MobileCtaBarProps) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: EASE, delay: 0.1 }}
-            className="min-w-0 font-mono text-xs leading-tight text-gray-700"
+            className="min-w-0 font-sans text-xs leading-tight text-gray-700"
           >
             <span className="sr-only">Planos: </span>
             {plans.map((plan) => (

@@ -103,7 +103,7 @@ describe("Home", () => {
         priceCurrency: "BRL",
       });
     });
-    expect(offers.map((offer) => offer.price)).toEqual(["49.90", "97.90"]);
+    expect(offers.map((offer) => offer.price)).toEqual(["49.90", "129.90"]);
   });
 
   it("escapa < no JSON-LD para nao abrir tag dentro do script", () => {

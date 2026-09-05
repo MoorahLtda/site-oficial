@@ -156,7 +156,7 @@ function Tile({ benefit, index, className, header, background, children }: TileP
         <span
           aria-hidden="true"
           className={cn(
-            "font-mono text-xs tracking-[0.1em]",
+            "font-display text-xs font-semibold tabular-nums",
             onPhoto ? "text-berry-300" : "text-gray-600",
           )}
         >

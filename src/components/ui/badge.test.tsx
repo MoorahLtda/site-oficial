@@ -20,8 +20,8 @@ describe("Badge", () => {
     rerender(<Badge tone="plum">Titular</Badge>);
     expect(screen.getByText("Titular")).toHaveClass("bg-white/10", "text-berry-100");
 
-    rerender(<Badge tone="critical">192</Badge>);
-    expect(screen.getByText("192")).toHaveClass("border-critical-500/40", "text-gray-900");
+    rerender(<Badge tone="critical">Alerta</Badge>);
+    expect(screen.getByText("Alerta")).toHaveClass("border-critical-500/40", "text-gray-900");
   });
 
   it("aplica o tamanho sm", () => {

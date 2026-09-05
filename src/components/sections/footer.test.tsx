@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { legalNotes, nav, site, ui } from "@/content/site";
+import { nav, site, ui } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Footer } from "./footer";
 
@@ -33,12 +33,15 @@ describe("Footer", () => {
     );
   });
 
-  it("mostra as três notas legais e o crédito das fotografias", () => {
+  it("mostra o crédito das fotografias e nenhuma nota legal", () => {
     renderWithMotion(<Footer />);
-    for (const note of legalNotes) {
-      expect(screen.getByText(note)).toBeInTheDocument();
-    }
     expect(screen.getByText("Fotografias ilustrativas (Pexels)")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "LGPD e seus direitos" })).toHaveAttribute(
+      "href",
+      "/lgpd",
+    );
+    expect(screen.queryByText(/192/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/plano de sa/i)).not.toBeInTheDocument();
   });
 
   it("mostra a razão social e só exibe CNPJ quando existir", () => {

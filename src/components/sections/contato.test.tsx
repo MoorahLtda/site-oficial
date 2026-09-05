@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import type { ComponentType } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { finalCta, legalNotes, photos, ui } from "@/content/site";
+import { finalCta, photos, ui } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Contato } from "./contato";
 
@@ -65,14 +65,15 @@ describe("Contato", () => {
     expect(screen.getByText(finalCta.text)).toBeInTheDocument();
   });
 
-  it("carrega o formulario com labels, select em familiar, h3 e a nota legal", () => {
+  it("carrega o formulario com labels, select em familiar e h3, sem nota legal", () => {
     renderWithMotion(<Contato />);
     expect(screen.getByLabelText(ui.leadForm.name)).toBeInTheDocument();
     expect(screen.getByLabelText(ui.leadForm.email)).toHaveAttribute("type", "email");
     expect(screen.getByLabelText(ui.leadForm.plan)).toHaveValue("familiar");
     expect(screen.getByRole("heading", { level: 3, name: ui.leadForm.title })).toBeInTheDocument();
     expect(screen.getByText(ui.leadForm.subtitle)).toBeInTheDocument();
-    expect(screen.getByText(legalNotes[0])).toBeInTheDocument();
+    expect(screen.queryByText(/LGPD/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/192/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: ui.leadForm.submit })).toBeInTheDocument();
     // Hook do card branco: o e2e mede a folga da marca d'agua contra o card, nao contra o botao.
     const card = screen

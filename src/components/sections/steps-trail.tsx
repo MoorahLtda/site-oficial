@@ -162,7 +162,7 @@ function DocumentIllustration({ show, instant, delay }: IllustrationProps) {
       <span className="h-1.5 w-[60%] rounded bg-gray-200" />
       <span className="h-1.5 w-[70%] rounded bg-gray-200" />
       <m.span
-        className="mt-auto self-end max-w-full text-right rounded border border-leaf-300 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-leaf-700"
+        className="mt-auto self-end max-w-full text-right rounded border border-leaf-300 px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.14em] text-leaf-700"
         variants={stamp}
         initial="hidden"
         animate={show ? "show" : "hidden"}
@@ -317,7 +317,7 @@ export function StepsTrail({ steps, className }: StepsTrailProps) {
               >
                 <div className="flex flex-1 flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-card transition duration-250 ease-out-expo hover:-translate-y-0.5 hover:shadow-float">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs tracking-[0.1em] text-gray-600">
+                    <span className="font-display text-xs font-semibold tabular-nums text-gray-600">
                       {String(step.n).padStart(2, "0")}
                     </span>
                     <span className="grid h-10 w-10 place-items-center rounded-full bg-berry-50 text-berry-600">

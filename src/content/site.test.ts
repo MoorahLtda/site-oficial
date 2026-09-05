@@ -12,10 +12,12 @@ import {
   getPlan,
   hero,
   howItWorks,
+  legalLinks,
   manifesto,
   mocks,
   nav,
   perPersonCents,
+  planNotes,
   plans,
   plansSection,
   problemsSection,
@@ -74,10 +76,39 @@ describe("conteudo", () => {
     expect(steps.map((s) => s.n)).toEqual([1, 2, 3, 4]);
   });
 
-  it("deixa claro que nao e plano de saude e orienta emergencias", () => {
-    const text = faq.map((f) => `${f.q} ${f.a}`).join(" ");
-    expect(text).toMatch(/não é plano de saúde/i);
-    expect(text).toMatch(/192/);
+  // Pedido do cliente (05/09/2026): nenhuma mencao a 192, SAMU ou LGPD no corpo da home.
+  // Os documentos legais continuam acessiveis pelos links do header e do rodape (legalLinks),
+  // por isso o rotulo "LGPD e seus direitos" fica de fora desta varredura.
+  it("home nao menciona 192, SAMU nem LGPD fora dos links legais", () => {
+    const all = walkStrings({
+      plans,
+      planNotes,
+      faq,
+      faqSection,
+      specialties,
+      steps,
+      benefits,
+      differentiators,
+      hero,
+      problemsSection,
+      manifesto,
+      howItWorks,
+      specialtiesSection,
+      cardSection,
+      benefitsSection,
+      mocks,
+      plansSection,
+      differentiatorsSection,
+      ui,
+      finalCta,
+    });
+    const offenders = all.filter((s) => /\b192\b|SAMU|LGPD/i.test(s));
+    expect(offenders).toEqual([]);
+  });
+
+  it("links legais continuam expostos para Termos, Privacidade e LGPD", () => {
+    expect(legalLinks.map((l) => l.slug)).toEqual(["termos", "privacidade", "lgpd"]);
+    for (const link of legalLinks) expect(link.href).toBe(`/${link.slug}`);
   });
 
   it("ids de navegacao sao unicos e em kebab-case", () => {
@@ -89,6 +120,8 @@ describe("conteudo", () => {
   it("nenhum texto contem travessao", () => {
     const all = walkStrings({
       plans,
+      planNotes,
+      legalLinks,
       faq,
       specialties,
       steps,

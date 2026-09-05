@@ -10,7 +10,7 @@ const { chromium } = require("@playwright/test");
     const first = (f) => f.split(",")[0].replace(/"/g, "").trim();
     const groups = {
       h1: "h1", h2: "h2", h3: "h3", p: "main p", eyebrow: ".eyebrow", nav: "header nav a",
-      button: "a[href='#planos']", mono: ".font-mono", li: "main li", input: "input", label: "label", footer: "footer p",
+      button: "a[href='#planos']", li: "main li", input: "input", label: "label", footer: "footer p",
     };
     const out = {};
     for (const [k, sel] of Object.entries(groups)) {

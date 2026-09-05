@@ -9,7 +9,7 @@ Cartao Moorah de beneficios (farmacias, exames e lojas parceiras).
 - Next.js 16 (App Router, Turbopack) + React 19 + TypeScript
 - Tailwind CSS v4 com tokens da marca em `src/app/globals.css`
 - motion (framer) para animacoes, lucide-react para icones, Radix para accordion e dialog
-- Fontes auto-hospedadas (Fontsource): Plus Jakarta Sans, Manrope, JetBrains Mono
+- Fontes auto-hospedadas (Fontsource): Plus Jakarta Sans e Manrope (sem fonte mono na interface)
 - Qualidade: Biome, Commitlint, Vitest + Testing Library, Playwright + axe-core
 
 ## Como rodar

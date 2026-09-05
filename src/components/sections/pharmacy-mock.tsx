@@ -67,14 +67,14 @@ export function PharmacyMock({ className }: PharmacyMockProps) {
       data-pharmacy-mock=""
       className={cn("rounded-xl border border-gray-200 bg-gray-50 p-3", className)}
     >
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gray-600">
+      <p className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600">
         {mocks.cardNumberField}
       </p>
       <div className="mt-1 flex items-center gap-3">
         <div
           data-card-digits=""
           data-shown={shown}
-          className="flex h-11 min-w-0 flex-1 items-center rounded-control border border-gray-300 bg-white px-3 font-mono text-sm tracking-[0.12em] text-gray-900"
+          className="flex h-11 min-w-0 flex-1 items-center rounded-control border border-gray-300 bg-white px-3 font-display text-sm font-semibold tabular-nums text-gray-900"
         >
           <span className="flex gap-2 tabular-nums">
             {GROUPS.map((group, groupIndex) => (

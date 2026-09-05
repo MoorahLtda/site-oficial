@@ -155,7 +155,7 @@ export function PortalMock({ className }: PortalMockProps) {
             <Badge tone="berry" size="sm" className="max-w-full whitespace-normal text-left">
               {mocks.reminderChip}
             </Badge>
-            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-gray-600">
+            <span className="inline-flex items-center gap-1.5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600">
               <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-leaf-500" />
               {mocks.connected}
             </span>
@@ -281,7 +281,7 @@ function DocumentRows({ reduced }: { reduced: boolean }) {
       {mocks.documents.map((doc) => (
         <m.li key={doc} variants={variants} className={ROW}>
           <span className="font-medium">{doc}</span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-leaf-700">
+          <span className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-leaf-700">
             {mocks.signed}
           </span>
         </m.li>
@@ -305,7 +305,7 @@ function DependentRows({ reduced }: { reduced: boolean }) {
               />
               <span className="font-medium">{holder.label}</span>
             </span>
-            <span className="font-mono text-xs tracking-[0.12em] text-gray-600">
+            <span className="font-display text-xs font-semibold tabular-nums text-gray-600">
               <span aria-hidden="true">.... </span>
               {sample.slice(-4)}
             </span>

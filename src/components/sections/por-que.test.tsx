@@ -25,7 +25,7 @@ describe("PorQue", () => {
       expect(list).toContainElement(heading);
       expect(screen.getByText(problem.text)).toBeInTheDocument();
     }
-    // Indices em mono (01, 02, 03), decorativos: o <ol> ja numera para leitores de tela.
+    // Indices em display (01, 02, 03), decorativos: o <ol> ja numera para leitores de tela.
     const indices = Array.from(list?.querySelectorAll("[data-index]") ?? []);
     expect(indices.map((el) => el.textContent)).toEqual(["01", "02", "03"]);
     for (const index of indices) expect(index).toHaveAttribute("aria-hidden", "true");

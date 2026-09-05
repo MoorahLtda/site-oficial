@@ -47,7 +47,7 @@ describe("SpecialtiesIndex", () => {
     expect(getCluster()).toHaveAttribute("data-active", "1");
   });
 
-  it("legenda mono do cluster mostra o hub em repouso e a especialidade no hover", () => {
+  it("legenda do cluster mostra o hub em repouso e a especialidade no hover", () => {
     renderWithMotion(<SpecialtiesIndex heading={null} />);
     const caption = document.querySelector("[data-cluster-caption]");
     expect(caption).toHaveAttribute("aria-hidden", "true");

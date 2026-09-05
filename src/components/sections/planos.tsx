@@ -1,4 +1,4 @@
-import { Check, CircleCheck, CircleX, Siren, X } from "lucide-react";
+import { Check, CircleCheck, CircleX, X } from "lucide-react";
 import Image from "next/image";
 import { Icon } from "@/components/icons";
 import { Reveal } from "@/components/ui/reveal";
@@ -17,8 +17,6 @@ import { PlanSelector } from "./plan-selector";
 const TITLE_ID = "planos-titulo";
 const INCLUDED_ID = "planos-incluido";
 const NOT_INCLUDED_ID = "planos-nao-incluido";
-
-const SAMU = "192";
 
 const familiar = getPlan("familiar");
 // Ancora de preco ao lado da foto: o valor por pessoa do Familiar, o argumento mais forte da
@@ -48,7 +46,7 @@ function FamilyPhoto() {
       </div>
       <p
         data-plan-chip=""
-        className="absolute -bottom-4 left-4 inline-flex animate-float-slow items-center gap-2 rounded-full bg-white px-4 py-2 font-mono text-sm text-gray-900 shadow-float lg:left-6"
+        className="absolute -bottom-4 left-4 inline-flex animate-float-slow items-center gap-2 rounded-full bg-white px-4 py-2 font-display text-sm font-semibold tabular-nums text-gray-900 shadow-float lg:left-6"
       >
         <Icon name="users" size={16} className="text-berry-600" />
         {CHIP_BEFORE}
@@ -59,21 +57,8 @@ function FamilyPhoto() {
   );
 }
 
-// Destaca o "192" em mono bold dentro da frase de emergencia, sem duplicar copy.
-function EmergencyText({ text }: { text: string }) {
-  const at = text.indexOf(SAMU);
-  if (at === -1) return <>{text}</>;
-  return (
-    <>
-      {text.slice(0, at)}
-      <span className="font-mono font-bold">{SAMU}</span>
-      {text.slice(at + SAMU.length)}
-    </>
-  );
-}
-
-// Secao Planos: heading, seletor de pessoas com os dois cards (cliente), notas legais,
-// painel "Incluido / Nao esta incluido" e callout de emergencia.
+// Secao Planos: heading, seletor de pessoas com os dois cards (cliente), nota comercial com
+// link para as duvidas e painel "Incluido / Nao esta incluido".
 export function Planos() {
   return (
     <Section id="planos" surface="soft" aria-labelledby={TITLE_ID}>
@@ -91,18 +76,15 @@ export function Planos() {
       <PlanSelector />
 
       <div className="mx-auto mt-10 max-w-[960px] space-y-6">
-        <div className="space-y-2">
-          <p className="text-center text-sm text-gray-600">{planNotes[0]}</p>
-          <p className="text-center text-sm text-gray-700">
-            {planNotes[1]}
-            <a
-              href="#duvidas"
-              className="ml-1 font-semibold text-berry-700 underline underline-offset-4 transition-colors duration-200 hover:text-berry-800"
-            >
-              {plansSection.faqLink}
-            </a>
-          </p>
-        </div>
+        <p className="text-center text-sm text-gray-600">
+          {planNotes[0]}
+          <a
+            href="#duvidas"
+            className="ml-1 font-semibold text-berry-700 underline underline-offset-4 transition-colors duration-200 hover:text-berry-800"
+          >
+            {plansSection.faqLink}
+          </a>
+        </p>
 
         <Reveal amount={0.2}>
           <div className="grid overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-card md:grid-cols-2">
@@ -141,15 +123,6 @@ export function Planos() {
               </ul>
             </div>
           </div>
-        </Reveal>
-
-        <Reveal amount={0.4} delay={0.1}>
-          <p className="flex items-start gap-3 rounded-card border border-critical-500/40 bg-white p-4 text-sm leading-relaxed text-gray-900">
-            <Siren size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-critical-500" />
-            <span>
-              <EmergencyText text={plansSection.emergency} />
-            </span>
-          </p>
         </Reveal>
       </div>
     </Section>

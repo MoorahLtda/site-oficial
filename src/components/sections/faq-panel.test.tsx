@@ -5,8 +5,6 @@ import { faq } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { FaqPanel } from "./faq-panel";
 
-const emergencyIndex = faq.findIndex((item) => item.a.includes("192"));
-
 describe("FaqPanel", () => {
   it("abre faq-1 por padrao e mantem um unico item aberto", () => {
     renderWithMotion(<FaqPanel />);
@@ -16,7 +14,20 @@ describe("FaqPanel", () => {
     expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(faq.length);
   });
 
-  it("marca o ancestral [data-faq-root] enquanto a pergunta de emergencia esta aberta", async () => {
+  it("numera as perguntas de 01 a 0n em font-display, sem mono", () => {
+    const { container } = renderWithMotion(<FaqPanel />);
+    const triggers = screen.getAllByRole("button");
+    expect(triggers).toHaveLength(faq.length);
+    triggers.forEach((trigger, i) => {
+      const number = trigger.querySelector("[aria-hidden='true']");
+      expect(number).toHaveTextContent(String(i + 1).padStart(2, "0"));
+      expect(number).toHaveClass("font-display", "font-semibold", "tabular-nums");
+      expect(number).not.toHaveClass("font-mono");
+    });
+    expect(container.querySelector(".font-mono")).toBeNull();
+  });
+
+  it("abre qualquer pergunta sem marcar o ancestral nem acrescentar selo a resposta", async () => {
     const user = userEvent.setup();
     renderWithMotion(
       <div data-faq-root="" data-testid="root">
@@ -24,12 +35,12 @@ describe("FaqPanel", () => {
       </div>,
     );
     const root = screen.getByTestId("root");
-    expect(root).not.toHaveAttribute("data-emergency-open");
-    await user.click(screen.getByRole("button", { name: faq[emergencyIndex].q }));
-    expect(root).toHaveAttribute("data-emergency-open", "true");
-    // A resposta comum nao ganha o selo 192.
-    await user.click(screen.getByRole("button", { name: faq[0].q }));
-    expect(root).not.toHaveAttribute("data-emergency-open");
-    expect(screen.getByRole("region", { name: faq[0].q })).not.toHaveTextContent("192");
+    for (const item of faq) {
+      await user.click(screen.getByRole("button", { name: item.q }));
+      expect(root.getAttributeNames()).toEqual(["data-faq-root", "data-testid"]);
+      const region = screen.getByRole("region", { name: item.q });
+      expect(region).toHaveTextContent(item.a);
+      expect(region.querySelectorAll("p")).toHaveLength(1);
+    }
   });
 });

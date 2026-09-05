@@ -47,7 +47,7 @@ export function Diferenciais() {
               />
             </span>
 
-            <span className="font-mono text-xs tracking-[0.1em] text-gray-600">
+            <span className="font-display text-xs font-semibold tabular-nums text-gray-600">
               {String(i + 1).padStart(2, "0")}
             </span>
 

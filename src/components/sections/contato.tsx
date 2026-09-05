@@ -1,13 +1,12 @@
 import { MessageCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Icon } from "@/components/icons";
 import { BrandLockup } from "@/components/ui/brand-lockup";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { TrailCluster } from "@/components/ui/trail-cluster";
-import { finalCta, legalNotes, photos, site, ui } from "@/content/site";
+import { finalCta, photos, site, ui } from "@/content/site";
 import { whatsappUrl } from "@/lib/utils";
 
 /*
@@ -153,10 +152,6 @@ export function Contato() {
           </h3>
           <p className="mt-1 text-sm text-gray-600">{ui.leadForm.subtitle}</p>
           <LeadForm defaultPlan="familiar" className="mt-6" />
-          <p className="mt-5 flex items-start gap-2 text-[13px] leading-snug text-gray-600">
-            <Icon name="shield-check" size={14} className="mt-0.5 shrink-0 text-berry-600" />
-            <span>{legalNotes[0]}</span>
-          </p>
         </div>
       </Reveal>
     </Section>

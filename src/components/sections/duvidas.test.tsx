@@ -1,12 +1,9 @@
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { faq, faqSection, site } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Duvidas } from "./duvidas";
-
-const emergencyItem = faq.find((item) => item.a.includes("192"));
-if (!emergencyItem) throw new Error("site.ts precisa de uma pergunta de emergencia com 192.");
 
 describe("Duvidas", () => {
   it("renderiza a secao soft com h2 ligado por aria-labelledby e um gatilho por pergunta", () => {
@@ -45,32 +42,31 @@ describe("Duvidas", () => {
     expect(screen.queryByText(faq[1].a)).not.toBeInTheDocument();
   });
 
-  it("coluna lateral so tem links, mostra 192 e reage a abertura da pergunta de emergencia", async () => {
-    const user = userEvent.setup();
+  it("coluna lateral vem antes do painel no DOM, so tem links e traz o contato por e-mail", () => {
     renderWithMotion(<Duvidas />);
     const section = document.getElementById("duvidas");
-    const emergencyCard = section?.querySelector("[data-emergency]");
-    expect(emergencyCard).not.toBeNull();
-    expect(emergencyCard?.querySelector("button")).toBeNull();
-    expect(emergencyCard).toHaveTextContent("192");
-    expect(emergencyCard).toHaveTextContent(faqSection.emergencyLabel);
-    expect(screen.getByRole("link", { name: site.contact.email })).toHaveAttribute(
-      "href",
-      `mailto:${site.contact.email}`,
-    );
+    const contactCard = section?.querySelector("[data-contact]");
+    expect(contactCard).not.toBeNull();
+    expect(contactCard?.querySelector("button")).toBeNull();
+    expect(contactCard).toHaveTextContent(faqSection.contactTitle);
+    // A coluna lateral (com o card de contato) precede o primeiro gatilho do FAQ.
+    const firstTrigger = screen.getByRole("button", { name: faq[0].q });
+    const position = contactCard?.compareDocumentPosition(firstTrigger) ?? 0;
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const email = screen.getByRole("link", { name: site.contact.email });
+    expect(email).toHaveAttribute("href", `mailto:${site.contact.email}`);
+    expect(email).toHaveClass("font-sans");
+    expect(email).not.toHaveClass("font-mono");
     // Sem NEXT_PUBLIC_WHATSAPP nao ha link de WhatsApp.
     expect(section?.querySelector('a[href*="wa.me"]')).toBeNull();
-    expect(section).not.toHaveAttribute("data-emergency-open");
+  });
 
-    const trigger = screen.getByRole("button", { name: emergencyItem.q });
-    await user.click(trigger);
-    expect(section).toHaveAttribute("data-emergency-open", "true");
-    const region = screen.getByRole("region", { name: emergencyItem.q });
-    expect(within(region).getByText("192")).toHaveClass("font-mono", "font-bold");
-    expect(within(region).getByText("192")).not.toHaveClass("text-critical-500");
-    expect(region).toHaveTextContent(faqSection.emergencyLabel);
-
-    await user.click(trigger);
-    expect(section).not.toHaveAttribute("data-emergency-open");
+  it("nao mostra cartao de emergencia, telefone de urgencia nem texto em mono", () => {
+    renderWithMotion(<Duvidas />);
+    const section = document.getElementById("duvidas");
+    expect(section?.querySelector("[data-emergency]")).toBeNull();
+    expect(section?.querySelector('a[href^="tel:"]')).toBeNull();
+    expect(section?.querySelector(".font-mono")).toBeNull();
+    expect(section).not.toHaveAttribute("data-faq-root");
   });
 });

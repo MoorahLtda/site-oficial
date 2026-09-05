@@ -265,7 +265,7 @@ export function CardStage({ heading, uses = cardSection.uses, note }: CardStageP
               />
               {/* A faixa inferior esquerda do cartao e lisa; a amora em relevo ocupa a direita. */}
               <div className="absolute bottom-[12%] left-[7%] right-[32%] text-white">
-                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-berry-200">
+                <p className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-berry-200">
                   {cardSection.numberLabel}
                 </p>
                 {/* Numero ilustrativo lido como um unico rotulo (role img); os digitos sao decorativos e animam. */}
@@ -273,7 +273,7 @@ export function CardStage({ heading, uses = cardSection.uses, note }: CardStageP
                   role="img"
                   aria-label={`${cardSection.sampleAria}: ${groupedNumber}`}
                   data-card-number
-                  className="mt-1 flex gap-3 font-mono text-xl tabular-nums tracking-[0.12em] lg:text-[1.625rem]"
+                  className="mt-1 flex gap-3 font-display text-xl font-semibold tabular-nums lg:text-[1.625rem]"
                 >
                   {GROUPS.map((group) => (
                     <span key={group.join("")} className="flex">

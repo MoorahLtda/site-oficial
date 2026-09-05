@@ -1,16 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { faq } from "../../src/content/site";
 
-const emergencyQuestion =
-  faq.find((item) => item.a.includes("192"))?.q ?? "E em caso de emergência?";
-
 test.describe("Duvidas", () => {
-  test("abrir a pergunta de emergencia mostra o selo 192 e marca a secao", async ({ page }) => {
+  test("segunda pergunta aberta por padrao e a primeira abre ao clicar", async ({ page }) => {
     await page.goto("/#duvidas");
     const section = page.locator("#duvidas");
-    await section.getByRole("button", { name: emergencyQuestion }).click();
-    const answer = section.getByRole("region", { name: emergencyQuestion });
-    await expect(answer.getByText("192", { exact: true })).toBeVisible();
-    await expect(section).toHaveAttribute("data-emergency-open", "true");
+    const first = section.getByRole("button", { name: faq[0].q });
+    const second = section.getByRole("button", { name: faq[1].q });
+    await expect(second).toHaveAttribute("aria-expanded", "true");
+    await expect(first).toHaveAttribute("aria-expanded", "false");
+
+    await first.click();
+    await expect(first).toHaveAttribute("aria-expanded", "true");
+    await expect(section.getByRole("region", { name: faq[0].q })).toContainText(faq[0].a);
+  });
+
+  test("a secao nao traz cartao de emergencia nem menciona 192", async ({ page }) => {
+    await page.goto("/#duvidas");
+    const section = page.locator("#duvidas");
+    await expect(section).not.toHaveAttribute("data-emergency-open");
+    await expect(section.locator("[data-emergency]")).toHaveCount(0);
+    await expect(section.getByText(/\b192\b|SAMU|LGPD/)).toHaveCount(0);
   });
 });

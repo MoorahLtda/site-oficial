@@ -158,7 +158,10 @@ function PlanCard({ plan, active, people, perPersonLine }: PlanCardProps) {
       </p>
 
       <p
-        className={cn("mt-2 min-h-5 font-mono text-sm", plum ? "text-berry-100" : "text-gray-600")}
+        className={cn(
+          "mt-2 min-h-5 font-display text-sm tabular-nums",
+          plum ? "text-berry-100" : "text-gray-600",
+        )}
       >
         {perPersonLine}
       </p>

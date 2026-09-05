@@ -52,7 +52,6 @@
 
   --font-display: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
 
   --radius-control: 10px;
   --radius-card: 16px;
@@ -249,14 +248,15 @@
 }
 
 /*
-  Rotulo pequeno acima dos titulos. Segue os rotulos do proprio manual da marca
-  ("06 · TIPOGRAFIA"): mono, caixa alta, tracking amplo, berry. Nunca acompanhado de traco.
+  Rotulo pequeno acima dos titulos, na mesma familia dos titulos (Plus Jakarta Sans):
+  caixa alta, peso forte, tracking amplo, berry. Nunca acompanhado de traco.
+  Nao usamos fonte mono em nenhum texto da interface.
 */
 @utility eyebrow {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-berry-500);
 }

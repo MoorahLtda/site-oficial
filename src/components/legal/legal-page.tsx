@@ -78,7 +78,7 @@ function Block({ block }: { block: LegalBlock }) {
       );
     case "ol":
       return (
-        <ol className={`${listBase} list-decimal marker:font-mono marker:text-berry-500`}>
+        <ol className={`${listBase} list-decimal marker:text-berry-500`}>
           {block.items?.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -135,7 +135,7 @@ export function LegalPage({ doc }: LegalPageProps) {
             <h1 className="mt-4 font-display text-3xl font-bold leading-[1.08] tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
               {doc.title}
             </h1>
-            <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-gray-600">
+            <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-xs font-semibold tabular-nums text-gray-600">
               <span>
                 {labels.version} {doc.version}
               </span>
@@ -173,7 +173,7 @@ export function LegalPage({ doc }: LegalPageProps) {
           {/* Sumario lateral: primeiro no mobile depois do titulo, fixo no desktop */}
           <aside className="lg:col-span-3 lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <div className="lg:sticky lg:top-24">
-              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
+              <p className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600">
                 {labels.summary}
               </p>
               <nav aria-label={labels.summaryNav} className="mt-4">
@@ -193,7 +193,7 @@ export function LegalPage({ doc }: LegalPageProps) {
 
               <p
                 id={othersLabelId}
-                className="mt-10 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600"
+                className="mt-10 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600"
               >
                 {labels.others}
               </p>

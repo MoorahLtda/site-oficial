@@ -7,7 +7,7 @@ import { ConvergenceTrail } from "./convergence-trail";
 
 /*
   Secao "Por que a Moorah / Tudo em um lugar" (docs/design-brief.md, 5.4). Superficie soft.
-  Bloco 1: titulo a esquerda e a lista ordenada dos tres problemas a direita, com indice mono.
+  Bloco 1: titulo a esquerda e a lista ordenada dos tres problemas a direita, com indice numerado em display.
   Bloco 2: manifesto centrado e a trilha de convergencia (cinco nos para um hub).
   Server Component: so recebe dados de site.ts; a animacao vive em Reveal* e ConvergenceTrail.
   A foto da consulta em casa (brief v2, item 1) fica sob o titulo, ao lado da lista: cabe em
@@ -45,7 +45,7 @@ export function PorQue() {
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgb(31_11_32/0.75),transparent_55%)]"
             />
-            <figcaption className="absolute inset-x-0 bottom-0 p-5 font-mono text-[11px] uppercase tracking-[0.18em] text-white">
+            <figcaption className="absolute inset-x-0 bottom-0 p-5 font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
               {PHOTO_CAPTION}
             </figcaption>
           </figure>
@@ -66,7 +66,7 @@ export function PorQue() {
               <span
                 data-index=""
                 aria-hidden="true"
-                className="pt-1.5 font-mono text-xs tracking-[0.1em] text-gray-600"
+                className="pt-1.5 font-display text-xs font-semibold tabular-nums text-gray-600"
               >
                 {`0${index + 1}`}
               </span>

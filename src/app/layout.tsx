@@ -5,7 +5,6 @@ import { site } from "@/content/site";
 // Fontes auto-hospedadas (Fontsource): sem dependencia de rede no build.
 import "@fontsource-variable/plus-jakarta-sans";
 import "@fontsource-variable/manrope";
-import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 
 const title = `${site.product} | Consultas médicas online ilimitadas`;

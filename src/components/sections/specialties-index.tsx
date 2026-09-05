@@ -87,7 +87,7 @@ export function SpecialtiesIndex({ heading }: SpecialtiesIndexProps) {
             <p
               aria-hidden="true"
               data-cluster-caption=""
-              className="mt-2 flex h-4 w-full items-center justify-center overflow-hidden font-mono text-[11px] uppercase tracking-[0.18em] text-gray-600"
+              className="mt-2 flex h-4 w-full items-center justify-center overflow-hidden font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600"
             >
               {/* Nome longo (Otorrinolaringologia) chega perto dos 200 px uteis do card: trunca
                   em vez de quebrar em duas linhas dentro da caixa de altura fixa. */}
@@ -130,7 +130,7 @@ export function SpecialtiesIndex({ heading }: SpecialtiesIndexProps) {
                   </div>
                   <span
                     aria-hidden="true"
-                    className="pt-1.5 font-mono text-xs tracking-[0.1em] text-gray-600 transition-colors duration-200 group-hover:text-berry-600"
+                    className="pt-1.5 font-display text-xs font-semibold tabular-nums text-gray-600 transition-colors duration-200 group-hover:text-berry-600"
                   >
                     {indexLabel(index)}
                   </span>

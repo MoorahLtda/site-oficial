@@ -1,6 +1,14 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { formatBRL, getPlan, perPersonCents, photos, plans, plansSection } from "@/content/site";
+import {
+  formatBRL,
+  getPlan,
+  perPersonCents,
+  photos,
+  planNotes,
+  plans,
+  plansSection,
+} from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Planos } from "./planos";
 
@@ -10,27 +18,27 @@ vi.mock("motion/react", async (importOriginal) => {
 });
 
 describe("Planos", () => {
-  it("e uma secao #planos rotulada pelo h2 e com a orientacao de emergencia (192)", () => {
+  it("e uma secao #planos rotulada pelo h2, com a nota comercial e o link para as duvidas", () => {
     renderWithMotion(<Planos />);
     const section = screen.getByRole("region", { name: plansSection.title });
     expect(section).toHaveAttribute("id", "planos");
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(plansSection.title);
-    expect(screen.getByText(/192 \(SAMU\)/)).toBeInTheDocument();
+    expect(screen.getByText(planNotes[0], { exact: false })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: plansSection.faqLink })).toHaveAttribute(
       "href",
       "#duvidas",
     );
   });
 
-  it("lista 5 itens incluidos, 5 nao incluidos e o callout com 192", () => {
+  it("lista 5 itens incluidos e 5 nao incluidos, sem callout de emergencia", () => {
     renderWithMotion(<Planos />);
     const included = screen.getByRole("list", { name: plansSection.includedTitle });
     const notIncluded = screen.getByRole("list", { name: plansSection.notIncludedTitle });
     expect(within(included).getAllByRole("listitem")).toHaveLength(5);
     expect(within(notIncluded).getAllByRole("listitem")).toHaveLength(5);
-    const emergency = screen.getByText("192");
-    expect(emergency).toHaveClass("font-mono", "font-bold");
-    expect(emergency.closest("p")).toHaveTextContent(plansSection.emergency);
+    expect(screen.queryByText(/192/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/SAMU/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/LGPD/)).not.toBeInTheDocument();
   });
 
   it("mostra os dois precos e os dois CTAs", () => {
@@ -55,6 +63,7 @@ describe("Planos", () => {
     const perPerson = formatBRL(perPersonCents(familiar)).replace(/ /g, " ");
     expect(chip?.textContent?.replace(/ /g, " ")).toContain(perPerson);
     expect(chip).toHaveTextContent(plansSection.photoChip.split("{price}")[1].trim());
-    expect(chip).toHaveClass("animate-float-slow", "bg-white", "shadow-float", "font-mono");
+    expect(chip).toHaveClass("animate-float-slow", "bg-white", "shadow-float", "font-display");
+    expect(chip).not.toHaveClass("font-mono");
   });
 });

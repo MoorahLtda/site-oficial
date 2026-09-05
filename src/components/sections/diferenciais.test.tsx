@@ -12,13 +12,14 @@ describe("Diferenciais", () => {
     expect(headings.map((h) => h.textContent)).toEqual(differentiators.map((d) => d.title));
   });
 
-  it("mostra os indices 01 a 04 em mono e o texto de cada item", () => {
+  it("mostra os indices 01 a 04 em display e o texto de cada item", () => {
     renderWithMotion(<Diferenciais />);
     const items = screen.getAllByRole("listitem");
     expect(items).toHaveLength(differentiators.length);
     items.forEach((item, i) => {
       const index = within(item).getByText(String(i + 1).padStart(2, "0"));
-      expect(index).toHaveClass("font-mono");
+      expect(index).toHaveClass("font-display", "tabular-nums");
+      expect(index).not.toHaveClass("font-mono");
       expect(item).toHaveTextContent(differentiators[i].text);
     });
   });

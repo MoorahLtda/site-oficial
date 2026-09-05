@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
-import { legalNotes, nav, site, ui } from "@/content/site";
+import { nav, site, ui } from "@/content/site";
 import { cn, whatsappUrl } from "@/lib/utils";
 
 /*
@@ -25,7 +25,7 @@ const columnLabels = {
   newTab: "(abre em nova aba)",
 } as const;
 
-// Credito das fotografias (brief v2, item 1), na area de notas legais junto das tres notas.
+// Credito das fotografias (brief v2, item 1), na linha inferior do rodape.
 const photoCredit = ui.footer.photoCredit;
 
 // Link de texto do rodape: alvo de 44 px no mobile, sublinhado suave no hover.
@@ -38,12 +38,12 @@ interface ColumnProps {
   children: ReactNode;
 }
 
-// Titulo de coluna (h2, para navegacao por leitor de tela) em mono caixa alta, sem traco:
+// Titulo de coluna (h2, para navegacao por leitor de tela) em display caixa alta, sem traco:
 // qualquer risco horizontal curto le como travessao, que a marca nao usa.
 function Column({ label, className, children }: ColumnProps) {
   return (
     <div className={className}>
-      <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-gray-600">
+      <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600">
         {label}
       </h2>
       {children}
@@ -236,17 +236,13 @@ export function Footer() {
 
           {/* Linha inferior */}
           <div className="mt-2 flex flex-col gap-3 border-t border-gray-200 pt-6 text-[13px] leading-relaxed text-gray-600 lg:col-span-12 lg:mt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-            <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              {[...legalNotes, photoCredit].map((note) => (
-                <li key={note} className="flex items-start gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="mt-[7px] size-1 shrink-0 rounded-full bg-berry-300"
-                  />
-                  {note}
-                </li>
-              ))}
-            </ul>
+            <p className="flex items-start gap-2">
+              <span
+                aria-hidden="true"
+                className="mt-[7px] size-1 shrink-0 rounded-full bg-berry-300"
+              />
+              {photoCredit}
+            </p>
             <p className="shrink-0 tabular-nums">
               &copy; {year} {site.legalName}
               {cnpj ? ` · CNPJ ${cnpj}` : null}

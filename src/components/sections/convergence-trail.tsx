@@ -171,7 +171,7 @@ function TrailSvg({ layout, geometry, shown, reduced, lit, withLabels }: TrailSv
                 aria-hidden="true"
                 x={node.cx + 24}
                 y={node.cy - 10}
-                className="font-mono text-[15px] fill-gray-700 lg:text-[13px] xl:text-[12px]"
+                className="font-display text-[15px] font-medium fill-gray-700 lg:text-[13px] xl:text-[12px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: shown ? 1 : 0 }}
                 transition={labelTransition(index, reduced)}
@@ -274,7 +274,7 @@ export function ConvergenceTrail({ className }: ConvergenceTrailProps) {
               key={label}
               data-mobile-label={index}
               className={cn(
-                "col-span-6 text-center font-mono text-[10px] leading-tight text-gray-700 min-[400px]:text-[11px]",
+                "col-span-6 text-center font-display text-[10px] font-medium leading-tight text-gray-700 min-[400px]:text-[11px]",
                 MOBILE_LABEL_COLUMN[index],
               )}
               initial={{ opacity: 0 }}

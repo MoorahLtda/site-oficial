@@ -95,10 +95,7 @@ export const plans: readonly Plan[] = [
   },
 ] as const;
 
-export const planNotes = [
-  "Valores mensais por assinatura, sem taxa de adesão.",
-  "Em urgências e emergências, procure o serviço presencial mais próximo ou ligue 192 (SAMU).",
-] as const;
+export const planNotes = ["Valores mensais por assinatura, sem taxa de adesão."] as const;
 
 export function formatBRL(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -237,7 +234,7 @@ export const benefits: readonly Benefit[] = [
   },
   {
     title: "Segurança de verdade",
-    text: "Dados de saúde criptografados, infraestrutura no Brasil e conformidade com a LGPD.",
+    text: "Dados de saúde criptografados, infraestrutura no Brasil e sigilo médico garantido.",
     icon: "shield-check",
   },
 ] as const;
@@ -297,10 +294,6 @@ export const faq: readonly FaqItem[] = [
     a: "É a consulta médica realizada por vídeo, com médico habilitado, regulamentada no Brasil pela Resolução CFM nº 2.314/2022. Receitas, atestados e pedidos de exame são emitidos com assinatura digital e valem em todo o país.",
   },
   {
-    q: "A Moorah é um plano de saúde?",
-    a: "Não. A Moorah é uma assinatura de telemedicina com benefícios. Não é plano de saúde regulado pela ANS e não cobre internações, cirurgias, exames ou atendimento presencial. Exames, medicamentos e compras em parceiros têm desconto na rede credenciada e são pagos pelo assinante.",
-  },
-  {
     q: "As consultas são realmente ilimitadas?",
     a: "Sim. Você agenda quantas consultas precisar, em qualquer especialidade disponível na plataforma, sem custo adicional por consulta.",
   },
@@ -320,14 +313,6 @@ export const faq: readonly FaqItem[] = [
     q: "Posso usar em mais de um aparelho?",
     a: "Sim. A plataforma funciona no navegador do celular, tablet ou computador, sem precisar instalar nada.",
   },
-  {
-    q: "E em caso de emergência?",
-    a: "A telemedicina não substitui o pronto-socorro. Em situações de emergência, como dor no peito, falta de ar intensa, desmaio ou acidente, ligue 192 (SAMU) ou procure a unidade de urgência mais próxima.",
-  },
-  {
-    q: "Meus dados de saúde estão seguros?",
-    a: "Sim. Os dados são criptografados, a infraestrutura fica no Brasil e o tratamento segue a LGPD. Só você e o médico que atende têm acesso ao seu prontuário.",
-  },
 ] as const;
 
 /*
@@ -339,12 +324,6 @@ export const legalLinks = [
   { slug: "termos", href: "/termos", label: "Termos de uso" },
   { slug: "privacidade", href: "/privacidade", label: "Política de privacidade" },
   { slug: "lgpd", href: "/lgpd", label: "LGPD e seus direitos" },
-] as const;
-
-export const legalNotes = [
-  "A Moorah não é plano de saúde e não é operadora regulada pela ANS.",
-  "Telemedicina regulamentada pela Resolução CFM nº 2.314/2022.",
-  "Em emergências, ligue 192 (SAMU).",
 ] as const;
 
 /* ---------- Copy por secao (docs/design-brief.md, secao 11) ---------- */
@@ -364,9 +343,8 @@ export const hero = {
   priceLine: "A partir de {price} por mês, sem taxa de adesão.",
   primaryCta: "Escolher meu plano",
   secondaryCta: "Como funciona",
-  // O cliente pediu para nao repetir "nao e plano de saude" na pagina (fica no rodape e nos termos).
-  trust:
-    "Médicos habilitados e telemedicina regulamentada no Brasil. Dados criptografados e protegidos pela LGPD.",
+  // Sem "nao e plano de saude", 192 ou LGPD na pagina (pedido do cliente): isso vive nos documentos.
+  trust: "Médicos habilitados e telemedicina regulamentada no Brasil.",
   proofChips: ["Qualquer especialidade", "Receitas com validade nacional", "Cartão Moorah incluso"],
   clusterAlt:
     "Ilustração de circuito: doze nós, um para cada especialidade, ligados por trilhas a um centro que representa a assinatura Moorah.",
@@ -463,7 +441,7 @@ export const mocks = {
   statusDone: "Realizada",
   statusScheduled: "Agendada",
   documents: ["Receita digital", "Atestado", "Pedido de exame"],
-  securityChips: ["Criptografia", "Infraestrutura no Brasil", "LGPD"],
+  securityChips: ["Criptografia", "Infraestrutura no Brasil", "Sigilo médico"],
 } as const;
 
 export const plansSection = {
@@ -491,10 +469,9 @@ export const plansSection = {
     "Internação e cirurgia",
     "Atendimento presencial",
     "Pronto-socorro e emergências",
-    "Cobertura de plano de saúde (ANS)",
+    "Cobertura de plano de saúde",
     "Custo de exames e medicamentos, que têm desconto na rede e são pagos pelo assinante",
   ],
-  emergency: "Em emergências, ligue 192 (SAMU). A telemedicina não substitui o pronto-socorro.",
 } as const;
 
 export const differentiatorsSection = {
@@ -554,9 +531,6 @@ export const faqSection = {
   title: "Perguntas que recebemos com frequência.",
   contactTitle: "Ainda com dúvida?",
   contactText: "Escreva para a gente e respondemos pelo e-mail.",
-  emergencyTitle: "Emergência",
-  emergencyLabel: "SAMU",
-  emergencyText: "A telemedicina não substitui o pronto-socorro.",
 } as const;
 
 export const finalCta = {

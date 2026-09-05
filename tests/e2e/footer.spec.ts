@@ -1,12 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Footer", () => {
-  test("rodape visivel ao final da pagina, com notas legais", async ({ page }) => {
+  test("rodape visivel ao final da pagina, com credito das fotos e links legais", async ({
+    page,
+  }) => {
     await page.goto("/");
     const footer = page.getByRole("contentinfo");
     await footer.scrollIntoViewIfNeeded();
     await expect(footer).toBeVisible();
-    await expect(footer.getByText(/não é plano de saúde/i)).toBeVisible();
+    await expect(footer.getByRole("link", { name: "LGPD e seus direitos" })).toHaveAttribute(
+      "href",
+      "/lgpd",
+    );
+    await expect(footer.getByText(/\b192\b/)).toHaveCount(0);
     await expect(footer.getByText("Fotografias ilustrativas (Pexels)")).toBeVisible();
   });
 
