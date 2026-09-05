@@ -157,3 +157,23 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
   sem autorizacao.
 - **Fotos**: podem ser de pessoas brasileiras (Pexels serve como placeholder). Fundo do hero
   continua o bloco plum. Sem video.
+
+## Hero v4 (Em casa, com medico, 05/09/2026)
+
+- **Fotos do hero** sao placeholders do Pexels, verificadas no CDN em `w=1920` (HTTP 200,
+  image/jpeg, 1920x1280): `heroCasa` 17489833 (Sandro Tavares; hero principal), `heroFamilia`
+  27176483 (Helena Lopes, Belo Horizonte; variante `/previews/hero-alt`), `heroMaeFilha` 8259883
+  (alternativa de familia para o hero principal e candidata a Planos) e `heroSenior` 27086767
+  (Helena Lopes; publico 60+, candidata a Planos ou Especialidades). O rodape mantem
+  "Fotografias ilustrativas (Pexels)". Foto propria com gente brasileira em casa e a troca que mais
+  muda o resultado; o layout aceita a troca mudando so a chave em `photos`.
+- **Idade da modelo de `heroCasa`**: 30 e poucos anos, enquanto o publico declarado e 40 a 55 ou
+  pai/mae com crianca. Duas buscas adicionais no Pexels nao trouxeram nada melhor. Se o cliente
+  preferir familia no principal, `heroMaeFilha` e a troca de uma chave (ver brief v4, secao 4).
+- **Trilha da Amora saiu do hero** (continua em Especialidades e Contato). O cliente elogiou o
+  elemento na v1: avisar explicitamente.
+- **`hero-network.tsx`, `hero-rotating.tsx` e `hero-marquee.tsx` foram removidos**; as chaves v3 de
+  `site.ts` (`hero.eyebrow`, `priceLine`, `trust`, `proofChips`, `clusterAlt`, `moments`,
+  `heroDynamic`, `HeroEvent`, `HeroMoment`) ficam para a limpeza final descrita no brief v4.
+- **Fade da foto em CSS** comeca no primeiro paint e nao espera a imagem: em rede lenta a foto
+  aparece sem transicao. Aceito em troca de zero JS no hero.

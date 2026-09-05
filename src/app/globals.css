@@ -80,6 +80,8 @@
   --animate-float-slow: float 7s ease-in-out infinite;
   --animate-drift: drift 18s ease-in-out infinite alternate;
   --animate-comet: comet 4.5s linear infinite;
+  /* Hero v4: a foto entra uma vez, no primeiro paint, sem depender de hidratacao. */
+  --animate-hero-photo-in: hero-photo-in 700ms var(--ease-out-expo) both;
 
   @keyframes marquee {
     from {
@@ -184,6 +186,15 @@
     }
     50% {
       transform: scale(1.03);
+    }
+  }
+  /* Unico movimento do hero v4: opacidade 0 -> 1 na foto; reduced motion zera pela regra global. */
+  @keyframes hero-photo-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 }

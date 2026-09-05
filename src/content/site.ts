@@ -115,6 +115,21 @@ export function getPlan(id: PlanId): Plan {
   return plan;
 }
 
+/*
+  Preenche os tokens de preco de uma frase a partir de plans[]: {individual} e {familiar} viram
+  formatBRL do plano, {people} vira o numero de pessoas do Familiar e {price} o preco de plans[0].
+  Nenhum componente escreve numero de preco solto; tudo passa por aqui ou por formatBRL.
+*/
+export function fillPlanTokens(text: string): string {
+  const individual = getPlan("individual");
+  const familiar = getPlan("familiar");
+  return text
+    .replaceAll("{individual}", formatBRL(individual.priceCents))
+    .replaceAll("{familiar}", formatBRL(familiar.priceCents))
+    .replaceAll("{people}", String(familiar.people))
+    .replaceAll("{price}", formatBRL(plans[0].priceCents));
+}
+
 // Chaves de icone resolvidas em src/components/icons.tsx (lucide-react).
 export type IconKey =
   | "stethoscope"
@@ -336,13 +351,61 @@ export interface HeroMoment {
   tone: "leaf" | "berry";
 }
 
+// Fato curto do pe do hero v4: valor em Plus Jakarta 600, legenda em Manrope. Sem icone, sem numero.
+export interface HeroFact {
+  value: string;
+  label: string;
+}
+
+// Bullet da variante de preview: trechos em texto corrido e trechos em negrito (mesma familia).
+export type HeroBulletSegment = string | { strong: string };
+
+/*
+  Hero v4 (docs/design-brief-v4-hero.md): titulo em duas linhas visiveis (sem rotacao, sem
+  sr-only), lead curta, frase de preco com os dois planos e tres fatos no pe do bloco.
+  Tokens {individual}, {familiar}, {people} e {price} sao resolvidos por fillPlanTokens.
+  Sem "nao e plano de saude" (fica em Planos, rodape e termos), sem LGPD, sem nome do parceiro
+  medico; a promessa comercial segue "qualquer especialidade" (decisoes do cliente de 04/09/2026).
+
+  Chaves marcadas como v3 (eyebrow, priceLine, trust, proofChips, clusterAlt, moments) ainda
+  alimentam hero-network, hero-rotating e hero-marquee; saem junto com esses arquivos na limpeza
+  final descrita no brief v4.
+*/
 export const hero = {
+  // v3: sai na limpeza final.
   eyebrow: "Telemedicina por assinatura",
-  title: "Consultas médicas ilimitadas, sem fila, para você e sua família.",
-  lead: "Médico por vídeo em qualquer especialidade, receitas e atestados digitais e o Cartão Moorah com descontos em farmácias, exames e lojas parceiras.",
+  title: "Um médico por vídeo, quando você precisar.",
+  // Linha 1 em Plus Jakarta 600 branco, linha 2 em 700 berry-100. Juntas formam hero.title.
+  titleLines: ["Um médico por vídeo,", "quando você precisar."],
+  lead: "Consultas ilimitadas em qualquer especialidade, para você ou para toda a família.",
+  // Manrope 700 branco na propria frase, nunca em card nem em mono.
+  prices: "Individual por {individual} por mês. Familiar por {familiar} para até {people} pessoas.",
+  priceNote: "Sem taxa de adesão.",
+  // v3: sai na limpeza final (a frase de preco v4 e `prices` + `priceNote`).
   priceLine: "A partir de {price} por mês, sem taxa de adesão.",
   primaryCta: "Escolher meu plano",
   secondaryCta: "Como funciona",
+  // Pe do bloco: tres fatos verificaveis que nao repetem a lead nem a frase de preco.
+  facts: [
+    { value: "Médicos habilitados", label: "telemedicina regulamentada" },
+    { value: "Receitas e atestados", label: "digitais, válidos em todo o Brasil" },
+    { value: "Cartão Moorah incluso", label: "desconto em farmácias, exames e lojas parceiras" },
+  ] satisfies readonly HeroFact[],
+  // Variante de preview (/previews/hero-alt): bullets no lugar da lead e microcopy sob os CTAs.
+  bullets: [
+    [
+      { strong: "Individual por {individual}" },
+      " por mês e ",
+      { strong: "Familiar por {familiar}" },
+      " para até {people} pessoas",
+    ],
+    [
+      { strong: "Consultas ilimitadas" },
+      " em qualquer especialidade, para você ou para toda a família",
+    ],
+    [{ strong: "Agende e consulte" }, " pelo celular ou computador, sem instalar nada"],
+  ] satisfies readonly (readonly HeroBulletSegment[])[],
+  micro: "Assinatura mensal, sem taxa de adesão.",
   // Sem "nao e plano de saude", 192 ou LGPD na pagina (pedido do cliente): isso vive nos documentos.
   trust: "Médicos habilitados e telemedicina regulamentada no Brasil.",
   proofChips: ["Qualquer especialidade", "Receitas com validade nacional", "Cartão Moorah incluso"],
@@ -555,10 +618,11 @@ export interface Photo {
   creditUrl: string;
 }
 
-function pexels(id: string, width: number, height: number, alt: string): Photo {
+// cdnWidth: largura pedida ao CDN do Pexels (1600 nas secoes; 1920 so nas fotos do hero, que sao o LCP).
+function pexels(id: string, width: number, height: number, alt: string, cdnWidth = 1600): Photo {
   return {
     id,
-    src: `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1600`,
+    src: `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${cdnWidth}`,
     width,
     height,
     alt,
@@ -568,6 +632,10 @@ function pexels(id: string, width: number, height: number, alt: string): Photo {
 }
 
 export type PhotoKey =
+  | "heroCasa"
+  | "heroFamilia"
+  | "heroMaeFilha"
+  | "heroSenior"
   | "heroPaciente"
   | "medicaSorrindo"
   | "medicoVideo"
@@ -579,6 +647,40 @@ export type PhotoKey =
   | "pacienteCama";
 
 export const photos: Record<PhotoKey, Photo> = {
+  /*
+    Hero v4 (docs/design-brief-v4-hero.md). Pessoas comuns em casa, sem jaleco, olhar fora da
+    camera, luz de janela; todas verificadas no CDN em w=1920 (HTTP 200, image/jpeg, 1920x1280).
+    heroCasa: hero principal. heroFamilia: variante de preview. heroMaeFilha e heroSenior:
+    alternativas para o cliente escolher e candidatas a Planos e Especialidades.
+  */
+  heroCasa: pexels(
+    "17489833",
+    1920,
+    1280,
+    "Mulher sentada no sofá da sala, de pernas cruzadas, olhando o celular perto de uma janela ampla com luz de fim de tarde.",
+    1920,
+  ),
+  heroFamilia: pexels(
+    "27176483",
+    1920,
+    1280,
+    "Mãe sentada no sofá de casa com o bebê no colo, olhando o celular, enquanto o filho maior brinca ao fundo da sala.",
+    1920,
+  ),
+  heroMaeFilha: pexels(
+    "8259883",
+    1920,
+    1280,
+    "Mãe e filha abraçadas no sofá de casa, sorrindo enquanto olham juntas a tela do celular.",
+    1920,
+  ),
+  heroSenior: pexels(
+    "27086767",
+    1920,
+    1280,
+    "Senhor de cabelo branco e camisa polo clara, sentado no sofá da sala de casa, sorrindo enquanto mexe no celular.",
+    1920,
+  ),
   heroPaciente: pexels(
     "7195087",
     1600,

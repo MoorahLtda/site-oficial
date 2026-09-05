@@ -6,6 +6,9 @@ test.describe("Beneficios e portal do paciente", () => {
     await page.goto("/#beneficios");
     // Com a secao ancorada no topo, o mock do portal fica abaixo da dobra: as abas so entram
     // quando ele aparece de fato (useInView com amount 0.3), que e o comportamento pretendido.
+    // Um giro de roda cancela o HashScroll (que reafirma a ancora por 2 s e desfaria o scroll
+    // programatico abaixo, deixando o portal fora de vista no mobile).
+    await page.mouse.wheel(0, 1);
     await page.locator("[data-portal-mock]").scrollIntoViewIfNeeded();
     const tablist = page.locator("#beneficios [role=tablist]");
     await expect(tablist).toBeVisible();
@@ -15,6 +18,9 @@ test.describe("Beneficios e portal do paciente", () => {
 
   test("ArrowRight na primeira aba seleciona a segunda", async ({ page }) => {
     await page.goto("/#beneficios");
+    // Um giro de roda cancela o HashScroll (que reafirma a ancora por 2 s e desfaria o scroll
+    // programatico abaixo, deixando o portal fora de vista no mobile).
+    await page.mouse.wheel(0, 1);
     await page.locator("[data-portal-mock]").scrollIntoViewIfNeeded();
     const tabs = page.locator("#beneficios [role=tablist]").getByRole("tab");
     await tabs.first().focus();
@@ -35,6 +41,7 @@ test.describe("Beneficios e portal do paciente", () => {
 
   test("a rede de exames desenha cometas brancos sobre a foto", async ({ page }) => {
     await page.goto("/#beneficios");
+    await page.mouse.wheel(0, 1);
     await page.locator("#beneficios article:has([data-photo-overlay])").scrollIntoViewIfNeeded();
     await expect(page.locator("#beneficios [data-comet]")).toHaveCount(8, { timeout: 4_000 });
   });
