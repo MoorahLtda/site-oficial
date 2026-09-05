@@ -7,7 +7,7 @@ test.describe("Planos", () => {
     const planos = page.locator("#planos");
     await planos.getByRole("radio", { name: "2" }).click();
     // Timeout padrao (10 s): sob carga a secao dinamica e a hidratacao chegam a passar de 2 s.
-    await expect(planos.getByText(/48,95/)).toBeVisible();
+    await expect(planos.getByText(/64,95/)).toBeVisible();
   });
 
   test("escolher 1 pessoa destaca o Individual e mostra a dica", async ({ page }) => {

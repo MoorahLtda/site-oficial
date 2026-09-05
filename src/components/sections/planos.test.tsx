@@ -10,12 +10,12 @@ vi.mock("motion/react", async (importOriginal) => {
 });
 
 describe("Planos", () => {
-  it("e uma secao #planos rotulada pelo h2 e com o aviso de plano de saude ligado ao FAQ", () => {
+  it("e uma secao #planos rotulada pelo h2 e com a orientacao de emergencia (192)", () => {
     renderWithMotion(<Planos />);
     const section = screen.getByRole("region", { name: plansSection.title });
     expect(section).toHaveAttribute("id", "planos");
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(plansSection.title);
-    expect(screen.getByText(/não é plano de saúde/i)).toBeInTheDocument();
+    expect(screen.getByText(/192 \(SAMU\)/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: plansSection.faqLink })).toHaveAttribute(
       "href",
       "#duvidas",
@@ -36,7 +36,7 @@ describe("Planos", () => {
   it("mostra os dois precos e os dois CTAs", () => {
     renderWithMotion(<Planos />);
     expect(screen.getByText(/49,90/)).toBeInTheDocument();
-    expect(screen.getByText(/97,90/)).toBeInTheDocument();
+    expect(screen.getByText(/129,90/)).toBeInTheDocument();
     for (const plan of plans) {
       expect(screen.getByRole("button", { name: plan.cta })).toBeInTheDocument();
     }
@@ -51,7 +51,7 @@ describe("Planos", () => {
 
     const chip = document.querySelector("[data-plan-chip]");
     const familiar = getPlan("familiar");
-    // O chip ancora o preco: valor por pessoa do Familiar (R$ 24,48) com a copy de site.ts.
+    // O chip ancora o preco: valor por pessoa do Familiar (R$ 32,48) com a copy de site.ts.
     const perPerson = formatBRL(perPersonCents(familiar)).replace(/ /g, " ");
     expect(chip?.textContent?.replace(/ /g, " ")).toContain(perPerson);
     expect(chip).toHaveTextContent(plansSection.photoChip.split("{price}")[1].trim());

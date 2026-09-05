@@ -28,10 +28,9 @@ test.describe("Landing Moorah Telemedicina", () => {
     await page.goto("/#planos");
     const planos = page.locator("#planos");
     await expect(planos.getByText(/49,90/)).toBeVisible();
-    await expect(planos.getByText(/97,90/)).toBeVisible();
+    await expect(planos.getByText(/129,90/)).toBeVisible();
     // O valor por pessoa aparece no card do Familiar e no chip da foto (brief v2, item 1).
-    await expect(planos.getByText(/24,48/).first()).toBeVisible();
-    await expect(planos.getByText(/não é plano de saúde/i)).toBeVisible();
+    await expect(planos.getByText(/32,48/).first()).toBeVisible();
   });
 
   test("FAQ abre e fecha com teclado", async ({ page }) => {

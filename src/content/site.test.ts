@@ -40,7 +40,7 @@ function walkStrings(value: unknown, out: string[] = []): string[] {
 describe("formatBRL", () => {
   it("formata centavos em reais no padrao pt-BR", () => {
     expect(formatBRL(4990).replace(NBSP, " ")).toBe("R$ 49,90");
-    expect(formatBRL(9790).replace(NBSP, " ")).toBe("R$ 97,90");
+    expect(formatBRL(12990).replace(NBSP, " ")).toBe("R$ 129,90");
     expect(formatBRL(0).replace(NBSP, " ")).toBe("R$ 0,00");
   });
 });
@@ -52,8 +52,8 @@ describe("planos", () => {
 
   it("calcula o valor por pessoa do familiar", () => {
     const familiar = getPlan("familiar");
-    expect(perPersonCents(familiar)).toBe(2448);
-    expect(formatBRL(perPersonCents(familiar)).replace(NBSP, " ")).toBe("R$ 24,48");
+    expect(perPersonCents(familiar)).toBe(3248);
+    expect(formatBRL(perPersonCents(familiar)).replace(NBSP, " ")).toBe("R$ 32,48");
   });
 
   it("individual custa menos que o familiar, mas mais por pessoa", () => {

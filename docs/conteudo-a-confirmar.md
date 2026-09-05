@@ -5,7 +5,7 @@ lugar em `src/content/site.ts` ou a variavel de ambiente que controla o texto.
 
 ## Precos e regras comerciais
 
-- **Precos**: R$ 49,90 (Individual) e R$ 97,90 (Familiar, ate 4 pessoas). Origem: apresentacao
+- **Precos**: R$ 49,90 (Individual) e R$ 129,90 (Familiar, ate 4 pessoas; confirmado pelo cliente em 04/09/2026, antes era R$ 97,90 da apresentacao). Origem original: apresentacao
   comercial de 02/07/2026. Ajuste em `plans[].priceCents`.
 - **Carencia / fidelidade / cancelamento**: o FAQ afirma "sem carencia, assinatura mensal,
   cancela quando quiser". Confirmar a regra real (`faq`).
@@ -118,7 +118,7 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
 - **Aprovacao de marca do motivo "Trilha da Amora"**: hub central + 12 nos ligados por trilhas de
   circuito em 45 graus, sem calice e sem contorno de fruta (o simbolo oficial aparece so em header,
   footer e 404). Aprovar antes de investir em acabamento adicional do hero.
-- **Valores por pessoa intermediarios** (2 pessoas = R$ 48,95; 3 pessoas = R$ 32,63) aparecem no
+- **Valores por pessoa intermediarios** (2 pessoas = R$ 64,95; 3 pessoas = R$ 43,30) aparecem no
   seletor de pessoas da secao Planos. Para esconder, basta remover as opcoes 2 e 3 do seletor em
   `plan-selector.tsx`.
 - **Painel "Incluido na assinatura / Nao esta incluido"** (`plansSection`) e as frases "nao e plano
@@ -141,3 +141,19 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
   ~45% 35%, conferindo o recorte.
 - **Header transparente sobre plum** so fica em risco se o `pt` do hero cair abaixo da altura do
   header + 16 px (64 / 96 / 104 px hoje, com a faixa legal em md+). Documentado em `hero.tsx`.
+
+## Decisoes do cliente em 04/09/2026
+
+- **Familiar a R$ 129,90 para ate 4 pessoas** (antes R$ 97,90). Aplicado em `plans[]`; valor por
+  pessoa no seletor recalculado (4 pessoas = R$ 32,48; 2 pessoas = R$ 64,95).
+- **"Nao e plano de saude" sai do hero e das secoes de venda** (o cliente considera redundante).
+  Continua no rodape (`legalNotes`), na resposta do FAQ e nos Termos de uso, por seguranca
+  regulatoria (ANS). Se o cliente quiser tirar tambem do rodape, e uma linha em `site.ts`.
+- **Especialidades**: o cliente quer a lista baseada na Click Life, parceira que vai operar a parte
+  medica. O site publico da Click Life nao publica a lista (so "medicos, psicologos, nutricionistas
+  e muito mais" e pronto atendimento 24h); os Termos de uso deles dizem que as especialidades ficam
+  "em locais visiveis na Plataforma", ou seja, dentro do app. Pendente: o cliente enviar a lista (ou
+  captura do app) para ajustarmos `specialties` em `site.ts`. Nao citar o nome da parceira na pagina
+  sem autorizacao.
+- **Fotos**: podem ser de pessoas brasileiras (Pexels serve como placeholder). Fundo do hero
+  continua o bloco plum. Sem video.

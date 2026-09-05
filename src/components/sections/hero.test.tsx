@@ -72,7 +72,8 @@ describe("Hero", () => {
 
   it("trust line, rede plum rotulada com tres discos de foto sem nada por cima, e nenhum card", () => {
     renderWithMotion(<Hero />);
-    expect(screen.getByText(hero.trust)).toHaveTextContent(/não é plano de saúde/);
+    // O cliente pediu para nao repetir "nao e plano de saude" no hero; a trust line segue visivel.
+    expect(screen.getByText(hero.trust)).toBeInTheDocument();
 
     const cluster = screen.getByRole("img", { name: hero.clusterAlt });
     expect(cluster.tagName.toLowerCase()).toBe("svg");

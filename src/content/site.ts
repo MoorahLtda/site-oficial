@@ -77,7 +77,7 @@ export const plans: readonly Plan[] = [
   {
     id: "familiar",
     name: "Familiar",
-    priceCents: 9790,
+    priceCents: 12990,
     people: 4,
     peopleLabel: "até 4 pessoas: titular + 3 dependentes",
     headline: "Tudo do Individual, para cada pessoa da família.",
@@ -97,7 +97,7 @@ export const plans: readonly Plan[] = [
 
 export const planNotes = [
   "Valores mensais por assinatura, sem taxa de adesão.",
-  "A Moorah não é plano de saúde e não substitui atendimento de urgência e emergência.",
+  "Em urgências e emergências, procure o serviço presencial mais próximo ou ligue 192 (SAMU).",
 ] as const;
 
 export function formatBRL(cents: number): string {
@@ -364,8 +364,9 @@ export const hero = {
   priceLine: "A partir de {price} por mês, sem taxa de adesão.",
   primaryCta: "Escolher meu plano",
   secondaryCta: "Como funciona",
+  // O cliente pediu para nao repetir "nao e plano de saude" na pagina (fica no rodape e nos termos).
   trust:
-    "Médicos habilitados e telemedicina regulamentada no Brasil. Dados criptografados e protegidos pela LGPD. A Moorah não é plano de saúde.",
+    "Médicos habilitados e telemedicina regulamentada no Brasil. Dados criptografados e protegidos pela LGPD.",
   proofChips: ["Qualquer especialidade", "Receitas com validade nacional", "Cartão Moorah incluso"],
   clusterAlt:
     "Ilustração de circuito: doze nós, um para cada especialidade, ligados por trilhas a um centro que representa a assinatura Moorah.",
