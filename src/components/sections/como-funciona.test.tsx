@@ -1,18 +1,16 @@
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { howItWorks, mocks, photos, steps } from "@/content/site";
+import { describe, expect, it } from "vitest";
+import { howItWorks, photos, steps } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { ComoFunciona } from "./como-funciona";
 
-// O IntersectionObserver de tests/setup.ts nunca dispara; com useInView true e reduced motion
-// o componente renderiza o estado final sem timers (ver 10.1 do brief).
-vi.mock("motion/react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("motion/react")>();
-  return { ...actual, useInView: () => true, useReducedMotion: () => true };
-});
-
+/*
+  Brief v4-secoes, 4.2: foto idosoTablet de um lado, lista vertical dos quatro passos do outro,
+  dentro de <ol aria-label="Passos"> com li filhos diretos (Reveal as="li"). Sem trilha, sem
+  cometa, sem indices, sem mini UIs. Assertivas por presenca (Reveal fica hidden no jsdom).
+*/
 describe("ComoFunciona", () => {
-  it("usa Section com id como-funciona e h2 ligado por aria-labelledby", () => {
+  it("usa Section com id como-funciona, h2 ligado por aria-labelledby e a lead", () => {
     renderWithMotion(<ComoFunciona />);
     const section = document.getElementById("como-funciona");
     expect(section?.tagName).toBe("SECTION");
@@ -20,58 +18,57 @@ describe("ComoFunciona", () => {
     expect(h2).toHaveAttribute("id");
     expect(section).toHaveAttribute("aria-labelledby", h2.getAttribute("id"));
     expect(screen.getByText(howItWorks.lead)).toBeInTheDocument();
+    // Sem eyebrow: a secao abre direto no h2 (tabela da secao 2 do brief).
+    expect(section?.querySelector(".eyebrow")).toBeNull();
   });
 
-  it("renderiza 4 h3 com os titulos de steps na ordem, dentro de ol 'Passos'", () => {
+  it("renderiza 4 li filhos diretos de ol 'Passos', cada um com h3 na ordem de steps", () => {
     renderWithMotion(<ComoFunciona />);
     const list = screen.getByRole("list", { name: "Passos" });
     expect(list.tagName).toBe("OL");
+    const items = list.querySelectorAll(":scope > li");
+    expect(items).toHaveLength(4);
     const headings = within(list).getAllByRole("heading", { level: 3 });
     expect(headings.map((h) => h.textContent)).toEqual(steps.map((s) => s.title));
-    expect(within(list).getAllByRole("listitem")).toHaveLength(4);
-  });
-
-  it("mostra os indices 01 a 04 como texto visivel", () => {
-    renderWithMotion(<ComoFunciona />);
-    for (const index of ["01", "02", "03", "04"]) {
-      const el = screen.getByText(index);
-      expect(el).not.toHaveAttribute("aria-hidden");
+    for (const step of steps) {
+      expect(screen.getByText(step.text)).toBeInTheDocument();
     }
   });
 
-  it("tem 4 ilustracoes decorativas com aria-hidden", () => {
+  it("traz a foto idosoTablet lazy com sizes e nenhuma outra img", () => {
     renderWithMotion(<ComoFunciona />);
-    const illustrations = document.querySelectorAll("[data-illustration]");
-    expect(illustrations).toHaveLength(4);
-    for (const el of illustrations) {
-      expect(el).toHaveAttribute("aria-hidden", "true");
-    }
-  });
-
-  it("inclui os tres chips de lembrete e os rotulos de confirmacao dos mocks", () => {
-    renderWithMotion(<ComoFunciona />);
-    for (const chip of mocks.reminderChips) {
-      expect(screen.getByText(chip)).toBeInTheDocument();
-    }
-    expect(screen.getByText(mocks.slotConfirmed)).toBeInTheDocument();
-    expect(screen.getByText(mocks.connected)).toBeInTheDocument();
-    expect(screen.getByText(mocks.signed)).toBeInTheDocument();
-  });
-
-  it("com reduced motion todos os nos ja estao acesos", () => {
-    renderWithMotion(<ComoFunciona />);
-    const nodes = document.querySelectorAll("[data-lit]");
-    expect(nodes).toHaveLength(4);
-    for (const node of nodes) {
-      expect(node).toHaveAttribute("data-lit", "true");
-    }
-  });
-
-  it("passo 3 traz a foto do medico na moldura de video, com sizes e lazy", () => {
-    renderWithMotion(<ComoFunciona />);
-    const img = screen.getByAltText(photos.medicoVideo.alt);
+    const img = screen.getByAltText(photos.idosoTablet.alt);
     expect(img).toHaveAttribute("loading", "lazy");
     expect(img.getAttribute("sizes")).toContain("(min-width: 1024px)");
-    expect(img.closest("[data-illustration]")).toHaveAttribute("aria-hidden", "true");
+    expect(img.parentElement).toHaveClass("overflow-hidden", "rounded-3xl");
+    expect(document.querySelectorAll("#como-funciona img")).toHaveLength(1);
+  });
+
+  it("corta a foto pela esquerda, onde esta o senhor (principio 1: uma pessoa em cena)", () => {
+    renderWithMotion(<ComoFunciona />);
+    const img = screen.getByAltText(photos.idosoTablet.alt);
+    /*
+      A origem e 3:2 deitada, com o senhor na borda esquerda em primeiro plano. object-left
+      mantem a pessoa no quadro; um recorte centrado devolve uma mesa com um tablet e ninguem,
+      que e o oposto do que o alt promete. O quadro quadrado em lg mostra 67% da largura
+      (4:5 mostraria 53% e nao caberiam pessoa e tablet juntos).
+    */
+    expect(img).toHaveClass("object-left");
+    expect(img.parentElement).toHaveClass("lg:aspect-square");
+  });
+
+  it("nao tem trilha, cometa, indices, ilustracoes nem borda entre os passos", () => {
+    renderWithMotion(<ComoFunciona />);
+    const section = document.getElementById("como-funciona");
+    expect(section?.querySelectorAll("[data-track]")).toHaveLength(0);
+    expect(section?.querySelectorAll("[data-comet]")).toHaveLength(0);
+    expect(section?.querySelectorAll("[data-lit]")).toHaveLength(0);
+    expect(section?.querySelectorAll("[data-illustration]")).toHaveLength(0);
+    expect(section?.textContent).not.toMatch(/\b0\d\b/);
+    const list = screen.getByRole("list", { name: "Passos" });
+    expect(list.className).not.toContain("divide-y");
+    for (const li of list.querySelectorAll(":scope > li")) {
+      expect(li.className).not.toContain("border");
+    }
   });
 });

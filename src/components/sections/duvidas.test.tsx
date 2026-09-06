@@ -6,11 +6,11 @@ import { renderWithMotion } from "@/test/render";
 import { Duvidas } from "./duvidas";
 
 describe("Duvidas", () => {
-  it("renderiza a secao soft com h2 ligado por aria-labelledby e um gatilho por pergunta", () => {
+  it("renderiza a secao light com o titulo novo ligado por aria-labelledby", () => {
     renderWithMotion(<Duvidas />);
     const section = document.getElementById("duvidas");
     const heading = screen.getByRole("heading", { level: 2, name: faqSection.title });
-    expect(section).toHaveClass("bg-gray-50");
+    expect(section).toHaveClass("bg-white");
     expect(section).toHaveAttribute("aria-labelledby", heading.id);
     for (const item of faq) {
       expect(screen.getByRole("button", { name: item.q })).toBeInTheDocument();
@@ -42,31 +42,30 @@ describe("Duvidas", () => {
     expect(screen.queryByText(faq[1].a)).not.toBeInTheDocument();
   });
 
-  it("coluna lateral vem antes do painel no DOM, so tem links e traz o contato por e-mail", () => {
+  it("a linha de contato vem depois do acordeao, em Manrope, sem card e sem WhatsApp por padrao", () => {
     renderWithMotion(<Duvidas />);
     const section = document.getElementById("duvidas");
-    const contactCard = section?.querySelector("[data-contact]");
-    expect(contactCard).not.toBeNull();
-    expect(contactCard?.querySelector("button")).toBeNull();
-    expect(contactCard).toHaveTextContent(faqSection.contactTitle);
-    // A coluna lateral (com o card de contato) precede o primeiro gatilho do FAQ.
-    const firstTrigger = screen.getByRole("button", { name: faq[0].q });
-    const position = contactCard?.compareDocumentPosition(firstTrigger) ?? 0;
-    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(section?.querySelector("[data-contact]")).toBeNull();
     const email = screen.getByRole("link", { name: site.contact.email });
     expect(email).toHaveAttribute("href", `mailto:${site.contact.email}`);
     expect(email).toHaveClass("font-sans");
     expect(email).not.toHaveClass("font-mono");
+    expect(screen.getByText(faqSection.contactTitle, { exact: false })).toBeInTheDocument();
+    // O contato precisa vir DEPOIS do ultimo gatilho, para o primeiro <button> ser o de faq[0].
+    const lastTrigger = screen.getByRole("button", { name: faq[faq.length - 1].q });
+    const position = lastTrigger.compareDocumentPosition(email);
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     // Sem NEXT_PUBLIC_WHATSAPP nao ha link de WhatsApp.
     expect(section?.querySelector('a[href*="wa.me"]')).toBeNull();
   });
 
-  it("nao mostra cartao de emergencia, telefone de urgencia nem texto em mono", () => {
+  it("sem numeracao, sem eyebrow, sem mono e sem svg alem do Plus dos gatilhos", () => {
     renderWithMotion(<Duvidas />);
-    const section = document.getElementById("duvidas");
-    expect(section?.querySelector("[data-emergency]")).toBeNull();
-    expect(section?.querySelector('a[href^="tel:"]')).toBeNull();
-    expect(section?.querySelector(".font-mono")).toBeNull();
-    expect(section).not.toHaveAttribute("data-faq-root");
+    const section = document.getElementById("duvidas") as HTMLElement;
+    expect(section.textContent).not.toMatch(/\b0\d\b/);
+    expect(section.querySelector(".eyebrow")).toBeNull();
+    expect(section.querySelector(".font-mono")).toBeNull();
+    expect(section.querySelectorAll("svg")).toHaveLength(faq.length);
+    expect(section.textContent).not.toMatch(/\b192\b|SAMU/);
   });
 });

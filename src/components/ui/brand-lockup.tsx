@@ -10,8 +10,9 @@ import { cn } from "@/lib/utils";
   titulo em volta. Passe `label` apenas quando o lockup for a unica referencia a marca naquele
   trecho, como no rodape.
 
-  Consumidores hoje: os dois blocos plum (cartao.tsx e contato.tsx), que usavam copias identicas
-  desta funcao antes da extracao.
+  Sem consumidor hoje: os dois blocos plum que o usavam (cartao.tsx, fundido em beneficios.tsx, e
+  contato.tsx) deixaram de repetir a marca dentro da secao no brief v4-secoes (4.4 e 4.7). O
+  primitivo fica de pe para o proximo bloco que precise do lockup completo.
 
   Os outros tres lockups da pagina NAO foram migrados, de proposito:
 
@@ -24,8 +25,8 @@ import { cn } from "@/lib/utils";
     nome vive no alt do wordmark (um <img> nomeado), aqui viveria no grupo via `label` (role="img"
     com alt vazio nas duas pecas). Os dois caminhos sao validos, mas trocar muda qual elemento
     carrega o nome e o teste do rodape afirma "exatamente um img com nome acessivel".
-  - hero-network.tsx: e so o simbolo dentro do disco branco do hub, sem a palavra. O primitivo
-    sempre desenha as duas pecas, entao nao serve, e nem deveria.
+  - o hero v4 (hero.tsx): usa a marca so no header fixo acima dele; nao repete o lockup dentro
+    do bloco plum.
 */
 
 // Dimensoes reais dos arquivos em public/brand: o next/image reserva o espaco pelo aspect-ratio.

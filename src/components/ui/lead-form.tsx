@@ -4,7 +4,7 @@ import { AlertCircle, CircleCheck } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useId, useState } from "react";
 import { z } from "zod";
-import { type PlanId, plans, ui } from "@/content/site";
+import { type PlanId, plans, site, ui } from "@/content/site";
 import { leadSchema } from "@/lib/leads";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
@@ -70,6 +70,13 @@ function ConsentLabel(): ReactNode {
   );
 }
 
+/*
+  Build estatico (GitHub Pages): nao existe servidor, entao a rota /api/leads sai do pacote e o
+  formulario nao teria para onde enviar. Em vez de oferecer um botao que falha, o bloco vira o
+  contato direto por e-mail. A flag e definida em .github/workflows/pages.yml.
+*/
+const STATIC_BUILD = process.env.NEXT_PUBLIC_STATIC_PREVIEW === "1";
+
 // Formulario de lead. Valida no cliente com o mesmo schema da rota e envia para /api/leads.
 // Nunca registra e-mail ou telefone no console (LGPD).
 export function LeadForm({ defaultPlan = "familiar", onSuccess, className }: LeadFormProps) {
@@ -77,6 +84,16 @@ export function LeadForm({ defaultPlan = "familiar", onSuccess, className }: Lea
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+
+  if (STATIC_BUILD) {
+    return (
+      <div className={cn("space-y-4", className)}>
+        <Button asChild size="lg" fullWidth>
+          <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+        </Button>
+      </div>
+    );
+  }
 
   const ids = {
     name: `${id}-nome`,

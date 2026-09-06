@@ -1,6 +1,7 @@
 const { chromium } = require("@playwright/test");
 const out = process.argv[2];
-const ids = ["inicio","por-que","como-funciona","especialidades","cartao","beneficios","planos","diferenciais","duvidas","contato"];
+// Ids da pagina depois do brief v4-secoes: Diferenciais saiu e Cartao foi fundido em #beneficios.
+const ids = ["inicio","por-que","como-funciona","especialidades","beneficios","planos","duvidas","contato"];
 (async () => {
   const browser = await chromium.launch({ channel: "msedge" });
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });

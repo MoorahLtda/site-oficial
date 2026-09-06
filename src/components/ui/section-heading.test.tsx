@@ -17,11 +17,14 @@ describe("SectionHeading", () => {
       name: "Agendou, foi lembrado, consultou.",
     });
     expect(heading).toHaveAttribute("id", "como-funciona-titulo");
-    expect(heading).toHaveClass("font-display", "text-gray-900", "mt-3");
+    expect(heading).toHaveClass("font-display", "font-semibold", "text-gray-900", "mt-3");
+    // Hierarquia por peso e escala (brief v4-secoes, 5.2): sem font-bold nem tracking extra no h2.
+    expect(heading).not.toHaveClass("font-bold");
+    expect(heading).not.toHaveClass("tracking-tight");
     const eyebrow = screen.getByText("Como funciona");
     expect(eyebrow.tagName).toBe("P");
     expect(eyebrow).toHaveClass("eyebrow");
-    expect(screen.getByText("Três passos.")).toHaveClass("mt-4", "text-gray-600");
+    expect(screen.getByText("Três passos.")).toHaveClass("mt-4", "text-gray-600", "max-w-[36rem]");
     expect(heading.parentElement).not.toHaveClass("text-center");
   });
 
@@ -31,10 +34,12 @@ describe("SectionHeading", () => {
     expect(heading.parentElement?.childElementCount).toBe(1);
   });
 
-  it("centraliza com align center", () => {
-    render(<SectionHeading title="Planos" align="center" />);
+  it("centraliza com align center e nao limita a largura da descricao", () => {
+    render(<SectionHeading title="Planos" description="Dois planos." align="center" />);
     const wrapper = screen.getByRole("heading", { level: 2 }).parentElement;
     expect(wrapper).toHaveClass("mx-auto", "max-w-2xl", "text-center");
+    // Centrado, o limite vem do max-w-2xl do wrapper; o max-w-[36rem] e so do align start.
+    expect(screen.getByText("Dois planos.")).not.toHaveClass("max-w-[36rem]");
   });
 
   it("tone plum usa texto branco e eyebrow berry-300", () => {

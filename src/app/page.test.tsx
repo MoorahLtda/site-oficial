@@ -5,7 +5,7 @@ import { renderWithMotion } from "@/test/render";
 import Home from "./page";
 
 /*
-  As secoes carregadas por next/dynamic (Cartao, Beneficios, Planos, Duvidas, Contato) tem testes
+  As secoes carregadas por next/dynamic (Beneficios, Planos, Duvidas, Contato) tem testes
   proprios. Aqui o mock devolve um marcador por chamada: o teste confere a composicao da pagina
   (ordem, landmarks, h1 unico, JSON-LD) sem depender do tempo de import dos chunks no OneDrive.
 */
@@ -56,19 +56,18 @@ describe("Home", () => {
     expect(skip.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("mantem a ordem das secoes: estaticas, dinamicas e diferenciais entre planos e duvidas", () => {
+  it("mantem a ordem das secoes: quatro estaticas e quatro dinamicas, sem Diferenciais nem Cartao", () => {
     renderWithMotion(<Home />);
     const main = screen.getByRole("main");
     const ids = Array.from(main.querySelectorAll(":scope > section, :scope > div > section"))
       .map((el) => el.id || el.getAttribute("data-testid") || "")
       .filter(Boolean);
     expect(ids.slice(0, 4)).toEqual(["inicio", "por-que", "como-funciona", "especialidades"]);
-    // Cartao, Beneficios, Planos (dinamicos), Diferenciais (estatico), Duvidas e Contato (dinamicos).
+    // Beneficios (fundido com o Cartao no pacote B do brief v4-secoes), Planos, Duvidas e
+    // Contato (dinamicos).
     expect(ids.slice(4)).toEqual([
       "secao-dinamica",
       "secao-dinamica",
-      "secao-dinamica",
-      "diferenciais",
       "secao-dinamica",
       "secao-dinamica",
     ]);

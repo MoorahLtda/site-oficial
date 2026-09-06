@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  benefits,
-  benefitsSection,
   cardSection,
-  differentiators,
-  differentiatorsSection,
   faq,
   faqSection,
   finalCta,
@@ -17,6 +13,7 @@ import {
   mocks,
   nav,
   perPersonCents,
+  photos,
   planNotes,
   plans,
   plansSection,
@@ -76,10 +73,12 @@ describe("conteudo", () => {
     expect(steps.map((s) => s.n)).toEqual([1, 2, 3, 4]);
   });
 
-  // Pedido do cliente (05/09/2026): nenhuma mencao a 192, SAMU ou LGPD no corpo da home.
-  // Os documentos legais continuam acessiveis pelos links do header e do rodape (legalLinks),
-  // por isso o rotulo "LGPD e seus direitos" fica de fora desta varredura.
-  it("home nao menciona 192, SAMU nem LGPD fora dos links legais", () => {
+  // Pedido do cliente (05/09/2026): nenhuma mencao a 192, SAMU, LGPD, ANS ou "plano de saude"
+  // no corpo da home. Os documentos legais continuam acessiveis pelos links do header e do
+  // rodape (legalLinks), por isso o rotulo "LGPD e seus direitos" fica de fora desta varredura.
+  // A varredura roda sobre os objetos de site.ts, nao sobre innerText: uppercase transforma o
+  // texto e geraria falso positivo (criterio 6 do brief v4-secoes).
+  it("home nao menciona 192, SAMU, LGPD, ANS nem plano de saude fora dos links legais", () => {
     const all = walkStrings({
       plans,
       planNotes,
@@ -87,22 +86,19 @@ describe("conteudo", () => {
       faqSection,
       specialties,
       steps,
-      benefits,
-      differentiators,
       hero,
       problemsSection,
       manifesto,
       howItWorks,
       specialtiesSection,
       cardSection,
-      benefitsSection,
       mocks,
       plansSection,
-      differentiatorsSection,
       ui,
       finalCta,
+      photoAlts: Object.values(photos).map((photo) => photo.alt),
     });
-    const offenders = all.filter((s) => /\b192\b|SAMU|LGPD/i.test(s));
+    const offenders = all.filter((s) => /\b192\b|SAMU|LGPD|\bANS\b|plano de saúde/i.test(s));
     expect(offenders).toEqual([]);
   });
 
@@ -125,31 +121,50 @@ describe("conteudo", () => {
       faq,
       specialties,
       steps,
-      benefits,
-      differentiators,
       hero,
       problemsSection,
       manifesto,
       howItWorks,
       specialtiesSection,
       cardSection,
-      benefitsSection,
       mocks,
       plansSection,
-      differentiatorsSection,
       ui,
       faqSection,
       finalCta,
+      photoAlts: Object.values(photos).map((photo) => photo.alt),
     });
     const offenders = all.filter((s) => s.includes(EM_DASH));
     expect(offenders).toEqual([]);
   });
 
-  it("momentos do hero usam icones e tons conhecidos", () => {
-    for (const moment of hero.moments) {
-      expect(["leaf", "berry"]).toContain(moment.tone);
-      expect(moment.icon.length).toBeGreaterThan(0);
+  it("tem exatamente 2 planos, base do grid de duas colunas de Planos", () => {
+    expect(plans).toHaveLength(2);
+  });
+
+  it("cardSection.benefits tem 4 itens tipograficos, sem icone", () => {
+    expect(cardSection.benefits).toHaveLength(4);
+    for (const benefit of cardSection.benefits) {
+      expect(benefit.title.length).toBeGreaterThan(0);
+      expect(benefit.text.length).toBeGreaterThan(0);
+      expect(benefit).not.toHaveProperty("icon");
     }
+  });
+
+  it("painel nao incluido nao carrega o aviso regulatorio disfarcado de bullet", () => {
+    expect(plansSection.notIncluded.some((item) => /plano de saúde/i.test(item))).toBe(false);
+    expect(plansSection.notIncluded).toContain("Atendimento de urgência e emergência");
+  });
+
+  it("faq fecha com a pergunta de dados ligada a Politica de privacidade e nao repete pergunta", () => {
+    const last = faq[faq.length - 1];
+    expect(last.q).toBe("Meus dados de saúde estão protegidos?");
+    expect(last.link).toEqual({ href: "/privacidade", label: "Ler a Política de privacidade" });
+    const questions = faq.map((item) => item.q);
+    expect(new Set(questions).size).toBe(questions.length);
+  });
+
+  it("mocks do cartao tem 12 digitos ilustrativos e 4 titulares", () => {
     expect(mocks.cardSamples.every((s) => /^\d{12}$/.test(s))).toBe(true);
     expect(mocks.cardHolders).toHaveLength(4);
   });

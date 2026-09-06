@@ -10,6 +10,10 @@ import { cn } from "@/lib/utils";
   circuito em 45 graus. Geometria e cascata em docs/design-brief.md, secao 9.2.
   Decorativo por padrao (aria-hidden); com `label` vira role="img". Sem interatividade propria:
   `active` e `confirmed` chegam de fora.
+
+  Sem consumidor na pagina hoje: o brief v4-secoes (principio 8) tirou o circuito de Especialidades
+  e de Contato, e o hero v4 nao o usa. O arquivo fica de pe porque a decisao de aposentar a Trilha
+  e do time do hero; nada em src/ o importa.
 */
 
 export type TrailClusterVariant = "full" | "mini" | "outline";
@@ -19,7 +23,7 @@ export type TrailNodeState = "idle" | "active" | "confirmed";
 export type TrailClusterTone = "light" | "plum";
 
 export interface TrailClusterProps {
-  // full = hero; mini = especialidades; outline = CTA final (so traco).
+  // full = trilha inteira; mini = versao reduzida; outline = so o traco.
   variant?: TrailClusterVariant;
   // intro = cascata do hero; draw = pathLength ao entrar em vista; static = tudo no estado final.
   animate?: TrailClusterAnimate;
@@ -32,10 +36,10 @@ export interface TrailClusterProps {
   // Cometas continuos correndo pelas trilhas (CSS animate-comet; a media query de
   // reduced-motion em globals.css ja zera). Padrao false.
   comets?: boolean;
-  // Paleta. light e o padrao (Especialidades e Contato nao mudam); plum e a do hero v3.
+  // Paleta. light e o padrao (sobre superficie clara); plum e a do bloco escuro.
   tone?: TrailClusterTone;
   // Indice do no -> raio novo. O circulo desse no cresce e vira o anel de um disco de foto
-  // posicionado por cima em HTML (ver hero-network.tsx e TRAIL_NODES).
+  // posicionado por cima em HTML (ver TRAIL_NODES).
   emphasis?: Readonly<Partial<Record<number, number>>>;
   className?: string;
 }

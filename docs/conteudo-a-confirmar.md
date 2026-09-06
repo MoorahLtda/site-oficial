@@ -128,6 +128,38 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
 - **Contraste**: `gray-500`, `leaf-500` e `critical-500` nunca sao usados como texto pequeno (falham
   AA); se a marca pedir outro uso, e preciso trocar o tom.
 
+## Secoes v4, fase 0 (05/09/2026, brief docs/design-brief-v4-secoes.md)
+
+- **Foto nova `pessoaCasa`** (secao Por que): Pexels 4259710, "Mother and Daughter Preparing
+  Avocado Toast", de August de Richelieu. Original 3337x5000 (2:3); CDN verificado em `w=1600`
+  (HTTP 200, image/jpeg, 1600x2397). Alt em portugues no manifesto: "Mae e filha preparando um
+  lanche juntas na mesa da cozinha, com luz natural da janela." Atende aos criterios da secao 6 do
+  brief: cena cotidiana em casa, sem celular/tablet/notebook, luz natural, olhar fora da camera,
+  sem marcas, neutros quentes, corte 4:5 com ar acima da cabeca. Placeholder Pexels como as demais.
+- **Chaves de `photos` do hero v4: resolvido na integracao final.** O hero usa `heroCasa` e a
+  variante de preview usa `heroFamilia`; `pessoaCasa` nao repete pessoa nem cenario. Detalhes na
+  secao "Secoes v4, integracao final" no fim deste documento.
+- **Seletor "Para quantas pessoas?" e badge "Mais escolhido" saem de Planos** no pacote C (brief,
+  4.5): o seletor produz valores por pessoa que nao sao oferta (R$ 64,95 e R$ 43,30) e o badge
+  afirma preferencia que ainda nao existe. Confirmar com o comercial (pergunta 2 da secao 9).
+- **Painel "Nao esta incluido" perdeu "Cobertura de plano de saude"** (aviso regulatorio em forma
+  de bullet) e "Pronto-socorro e emergencias" virou "Atendimento de urgencia e emergencia" (fase 0,
+  ja em `plansSection.notIncluded`). O juridico precisa dizer se o painel sem essa linha ainda
+  protege a empresa (pergunta 3 da secao 9 do brief).
+- **Pergunta nova no FAQ**: "Meus dados de saude estao protegidos?", com link para
+  `/privacidade`. Substitui o beneficio "Seguranca de verdade". A resposta afirma so sigilo
+  medico e nao cita criptografia nem infraestrutura no Brasil, que a engenharia ainda precisa
+  confirmar (lista de afirmacoes tecnicas na secao Juridico acima).
+- **Chaves de `photos` que ficam sem uso nas secoes** depois da rodada v4: `medicaSorrindo`,
+  `medicaHeadset`, `exame`, `pacienteCama`, `familiaSofa`, `familiaCasa`, `medicoVideo`
+  (e `heroPaciente`, se o hero nao usar). Nao remover antes de o hero fechar as chaves dele;
+  limpeza depois do hero.
+- **Decisao de 04/09 sobre "nao e plano de saude" nunca chegou ao codigo**: nao existe
+  `legalNotes` em `src`, nem a frase no rodape ou no FAQ. Foi superada pelo veto de 05/09 a
+  qualquer aviso regulatorio no corpo da pagina; a frase vive nos Termos de uso e na Politica de
+  privacidade. A pergunta 3 da secao 9 do brief pede ao juridico se ela precisa voltar em algum
+  lugar da pagina.
+
 ## Hero v3 (Constelacao de cuidado, 03/09/2026)
 
 - **`hero.moments` e o tipo `HeroMoment`** ficam sem uso; `heroDynamic.events[].label/text/icon`
@@ -174,6 +206,49 @@ indispensavel e com registro de acesso, ordem judicial, autoridade sanitaria). A
   elemento na v1: avisar explicitamente.
 - **`hero-network.tsx`, `hero-rotating.tsx` e `hero-marquee.tsx` foram removidos**; as chaves v3 de
   `site.ts` (`hero.eyebrow`, `priceLine`, `trust`, `proofChips`, `clusterAlt`, `moments`,
-  `heroDynamic`, `HeroEvent`, `HeroMoment`) ficam para a limpeza final descrita no brief v4.
+  `heroDynamic`, `HeroEvent`, `HeroMoment`) tambem ja sairam, junto com a limpeza final do brief v4.
 - **Fade da foto em CSS** comeca no primeiro paint e nao espera a imagem: em rede lenta a foto
   aparece sem transicao. Aceito em troca de zero JS no hero.
+
+## Secoes v4, integracao final (05/09/2026, brief docs/design-brief-v4-secoes.md, secao 7)
+
+- **Chaves de `photos` do hero v4 (pendencia da fase 0): respondida pelo codigo.** O hero usa
+  `heroCasa` (`hero.tsx`) e `heroFamilia` (variante `/previews/hero-alt`); `heroMaeFilha` e
+  `heroSenior` ficam como alternativas registradas no manifesto, sem consumidor. Fora do hero a
+  pagina tem duas fotos: `pessoaCasa` em Por que e `idosoTablet` em Como funciona. Nenhuma
+  repeticao de pessoa ou cenario.
+- **Chaves de `photos` orfas ja sairam do manifesto**: `medicaSorrindo`, `medicaHeadset`, `exame`,
+  `pacienteCama`, `familiaSofa`, `familiaCasa`, `medicoVideo` e `heroPaciente` nao existem mais em
+  `PhotoKey`. Restam seis chaves, todas verificadas no CDN.
+- **`plansSection.coversOne` ("Cobre 1 pessoa.") removido.** O card do Individual passou a mostrar
+  `plans[0].peopleLabel` ("1 pessoa"), a alternativa que o proprio brief (4.5) previa; o campo
+  ficou sem consumidor.
+- **`@keyframes pulse-once` removido de `globals.css`** (sem consumidor desde que o card de
+  emergencia da v1 saiu). Ficam como orfaos autorizados pelo brief os keyframes `comet`, `drift`,
+  `float`, `float-slow` e `marquee`.
+- **Orfaos que ficam de pe, por decisao do time do hero**: `src/components/icons.tsx` (com
+  `IconKey` em `site.ts`), `src/components/ui/trail-cluster.tsx` e `src/components/ui/marquee.tsx`
+  nao tem nenhum consumidor na pagina depois da v4. Nenhum deles entra no bundle. A decisao de
+  apagar os tres (e `IconKey` junto) e do time do hero; a lista fechada da secao 7 do brief so
+  autoriza `icons.tsx` a ficar orfao.
+- **`knip` nao foi instalado.** A secao 7 do brief pede `knip` como devDependency com `knip.json`
+  versionado; a integracao final rodou a varredura de orfaos a mao (grep por consumidor de cada
+  campo, chave de foto e keyframe). Instalar o knip continua pendente e vale como rede para as
+  proximas rodadas.
+- **Titulo do dialog de Planos** continua em `plan.cta` ("Assinar Familiar") sobre o formulario de
+  contato, como o brief manda ate a pergunta 7 da secao 9 fechar o texto. A troca para
+  `ui.leadForm.title` com o nome do plano na descricao e uma linha em `ui/lead-dialog.tsx` mais o
+  teste.
+- **Barra de CTA mobile sobre o fim do bloco de Beneficios**: medido em 360 e 390. O ultimo item
+  ("Portal do paciente") passa por baixo da barra durante a rolagem, como qualquer conteudo passa
+  por baixo de uma barra fixa, e fica inteiro acima dela por cerca de 180 px de rolagem antes de a
+  barra sumir em `#planos` (medido: item em 587..689 com a barra em 711). O `pb-24` que o brief
+  (4.9) sugeria nao foi aplicado: como a barra so some com 5 % de `#planos` em vista, aumentar o
+  fundo do bloco adia o desmonte da barra e mantem a sobreposicao transitoria.
+- **`scroll-mt-20` (80 px) das secoes e menor que o header fixo em `lg` (104 px)**: ao chegar por
+  ancora (`/#planos`), o topo da secao fica cerca de 24 px atras do header. E anterior a esta
+  rodada e vive em `ui/section.tsx`; corrigir com `scroll-mt-28 lg:scroll-mt-32` na proxima
+  rodada que tocar em `ui/`.
+- **Alturas dos `SectionSkeleton` em `page.tsx` remedidas** com a pagina v4 (Beneficios 1353 / 1034
+  / 930 px, Planos 2390 / 1431, Duvidas 1076 / 932, Contato 1168 / 891 / 871, nas larguras 390 /
+  1024 / 1440). Remedir sempre que a copy ou o layout de uma secao dinamica mudar.

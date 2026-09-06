@@ -70,6 +70,37 @@ public/brand             logos e arte do cartao
 Leia `CLAUDE.md`: regras de marca, escrita (sem travessao), acessibilidade, performance e fluxo
 de trabalho (Conventional Commits, TDD, issues e PRs quando houver repositorio remoto).
 
+## Publicacao
+
+O site e um app Next.js com rota de API (`/api/leads`), otimizacao de imagens e cabecalhos de
+seguranca. Essas tres coisas precisam de servidor, entao ha dois destinos com papeis diferentes.
+
+### Producao: host com servidor Node
+
+Recomendado: Vercel, que e de quem faz o Next e le o repositorio do GitHub direto.
+
+1. Entre em vercel.com com a conta do GitHub e escolha "Add New > Project".
+2. Importe `MoorahLtda/site-oficial`. O Next e detectado sozinho; nao mude build nem output.
+3. Em Environment Variables, preencha o que estiver em `.env.example` que ja existir
+   (contato, WhatsApp, CNPJ, `LEAD_WEBHOOK_URL` e `LEAD_WEBHOOK_SECRET`).
+4. Deploy. Cada push na `main` publica de novo e cada pull request ganha uma URL propria.
+5. Dominio: em Settings > Domains, aponte `moorah.com.br` (a Vercel mostra os registros de DNS).
+
+Nada no codigo muda para isso.
+
+### Previa: GitHub Pages
+
+`.github/workflows/pages.yml` gera uma versao estatica e publica em
+https://moorahltda.github.io/site-oficial/. Serve para mostrar o site, nao para receber cliente.
+
+Para ligar: em Settings > Pages, mude "Source" de "Deploy from a branch" para **GitHub Actions**.
+Servir a branch direto nao funciona, porque o repositorio guarda codigo-fonte e nao um site
+pronto (nao existe `index.html` na raiz).
+
+O que a previa perde, por ser so arquivo estatico: o formulario nao envia (a rota de API sai do
+build), as fotos vao sem otimizacao e nao ha cabecalhos de seguranca. Por isso ela sobe com
+`robots.txt` bloqueando buscadores.
+
 ## Antes de publicar
 
 Revise `docs/conteudo-a-confirmar.md`: precos, regras comerciais, dados da empresa, destino dos

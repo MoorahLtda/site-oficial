@@ -1,0 +1,75 @@
+# Publica o site no GitHub Pages: https://moorahltda.github.io/site-oficial/
+#
+# Em Settings > Pages, a origem (Source) precisa ser "GitHub Actions". Servir a branch direto
+# nao funciona: o repositorio guarda codigo-fonte do Next, nao um site pronto.
+#
+# O que muda em relacao a um servidor Node: a rota /api/leads sai do pacote (o formulario de
+# contato vira o e-mail direto, ver src/components/ui/lead-form.tsx), as imagens vao sem
+# otimizacao e os cabecalhos de seguranca de next.config.ts nao existem, porque o Pages nao
+# define cabecalho. Enquanto o conteudo nao estiver fechado, sobe com robots.txt bloqueando
+# buscadores: para liberar, troque o conteudo do robots.txt no passo "Arquivos de servico".
+#
+# BASE_PATH: em pagina de projeto o site vive em /site-oficial. Se um dia entrar um dominio
+# proprio em Settings > Pages > Custom domain, apague as duas linhas de BASE_PATH abaixo.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicacao por vez, sem cancelar a que ja esta subindo.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Gera o site estatico
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Remove a rota de API
+        # Export estatico nao aceita route handler com POST; sem servidor ela nao funcionaria.
+        run: rm -rf src/app/api
+      - name: Build estatico
+        env:
+          STATIC_EXPORT: "1"
+          BASE_PATH: /site-oficial
+          NEXT_PUBLIC_BASE_PATH: /site-oficial
+          NEXT_PUBLIC_STATIC_PREVIEW: "1"
+          NEXT_PUBLIC_SITE_URL: https://moorahltda.github.io/site-oficial
+          NEXT_PUBLIC_CONTACT_EMAIL: comercial@moorah.com.br
+        run: npm run build
+      - name: Arquivos de servico do Pages
+        # Sem .nojekyll o Pages ignora a pasta _next (Jekyll pula nomes com underscore) e o site
+        # sobe sem CSS nem JS. O export vai para .next-export por causa do distDir do config.
+        run: |
+          touch .next-export/.nojekyll
+          printf 'User-agent: *\nDisallow: /\n' > .next-export/robots.txt
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .next-export
+
+  deploy:
+    name: Publica
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

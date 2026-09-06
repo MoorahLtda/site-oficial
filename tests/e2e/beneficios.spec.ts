@@ -1,48 +1,96 @@
 import { expect, test } from "@playwright/test";
-import { photos } from "../../src/content/site";
+import { cardSection, mocks } from "../../src/content/site";
 
-test.describe("Beneficios e portal do paciente", () => {
-  test("o portal mostra as abas depois de entrar em vista", async ({ page }) => {
+/*
+  Bloco fundido Cartao + Beneficios (brief v4-secoes, 4.4): absorve os casos do antigo
+  tests/e2e/cartao.spec.ts (removido). O id #cartao deixou de existir; a ancora do header
+  continua #beneficios.
+*/
+
+function grouped(sample: string): string {
+  return `${sample.slice(0, 4)} ${sample.slice(4, 8)} ${sample.slice(8, 12)}`;
+}
+
+test.describe("Beneficios (bloco fundido com o Cartao Moorah)", () => {
+  test("mostra o cartao com alt descritivo e o numero exemplo do titular", async ({ page }) => {
     await page.goto("/#beneficios");
-    // Com a secao ancorada no topo, o mock do portal fica abaixo da dobra: as abas so entram
-    // quando ele aparece de fato (useInView com amount 0.3), que e o comportamento pretendido.
-    // Um giro de roda cancela o HashScroll (que reafirma a ancora por 2 s e desfaria o scroll
-    // programatico abaixo, deixando o portal fora de vista no mobile).
-    await page.mouse.wheel(0, 1);
-    await page.locator("[data-portal-mock]").scrollIntoViewIfNeeded();
-    const tablist = page.locator("#beneficios [role=tablist]");
-    await expect(tablist).toBeVisible();
-    await expect(tablist.getByRole("tab")).toHaveCount(3);
-    await expect(tablist.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
+    const card = page.locator("#beneficios").getByAltText(cardSection.imageAlt);
+    await expect(card).toBeVisible();
+    await expect(page.locator("#beneficios [data-card-number]")).toHaveAttribute(
+      "aria-label",
+      new RegExp(`${grouped(mocks.cardSamples[0])}$`),
+    );
   });
 
-  test("ArrowRight na primeira aba seleciona a segunda", async ({ page }) => {
+  test("abre com o h2 do cartao, quatro beneficios e sem o bento antigo", async ({ page }) => {
     await page.goto("/#beneficios");
-    // Um giro de roda cancela o HashScroll (que reafirma a ancora por 2 s e desfaria o scroll
-    // programatico abaixo, deixando o portal fora de vista no mobile).
+    const section = page.locator("#beneficios");
+    await expect(section.getByRole("heading", { level: 2, name: cardSection.title })).toBeVisible();
+    await expect(section.getByRole("heading", { level: 3 })).toHaveCount(4);
+    await expect(section.locator("[data-brand-lockup]")).toHaveCount(0);
+    await expect(section.locator("[role=tablist]")).toHaveCount(0);
+    await expect(section.locator("[data-comet]")).toHaveCount(0);
+    await expect(section.locator("[data-portal-mock]")).toHaveCount(0);
+    // O id cartao deixou de existir: o bloco antigo nao pode renderizar em paralelo.
+    await expect(page.locator("#cartao")).toHaveCount(0);
+  });
+
+  test("trocar para Dependente 2 muda o numero ilustrativo do cartao", async ({ page }) => {
+    await page.goto("/#beneficios");
+    // Um giro de roda cancela o HashScroll (que reafirma a ancora por 2 s e desfaria o
+    // scroll programatico abaixo).
     await page.mouse.wheel(0, 1);
-    await page.locator("[data-portal-mock]").scrollIntoViewIfNeeded();
-    const tabs = page.locator("#beneficios [role=tablist]").getByRole("tab");
-    await tabs.first().focus();
+    await page.locator("#beneficios [role=radiogroup]").scrollIntoViewIfNeeded();
+    await page.locator("#beneficios").getByRole("radio", { name: "Dependente 2" }).click();
+    await expect(page.locator("#beneficios [data-card-number]")).toHaveAttribute(
+      "aria-label",
+      new RegExp(`${grouped(mocks.cardSamples[2])}$`),
+    );
+  });
+
+  test("o radiogroup funciona por teclado: ArrowRight troca titular e numero", async ({ page }) => {
+    await page.goto("/#beneficios");
+    await page.mouse.wheel(0, 1);
+    await page.locator("#beneficios [role=radiogroup]").scrollIntoViewIfNeeded();
+    await page.locator("#beneficios").getByRole("radio", { name: "Titular" }).focus();
     await page.keyboard.press("ArrowRight");
-    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
-    await expect(tabs.nth(1)).toBeFocused();
+    const dependente = page.locator("#beneficios").getByRole("radio", { name: "Dependente 1" });
+    await expect(dependente).toHaveAttribute("aria-checked", "true");
+    await expect(dependente).toBeFocused();
+    await expect(page.locator("#beneficios [data-card-number]")).toHaveAttribute(
+      "aria-label",
+      new RegExp(`${grouped(mocks.cardSamples[1])}$`),
+    );
   });
 
-  test("as celulas Portal e Exames trazem as fotos do manifesto", async ({ page }) => {
-    await page.goto("/#beneficios");
-    const portal = page.locator("#beneficios article:has([data-tile-header])");
-    await expect(portal.locator("img")).toHaveAttribute("alt", photos.idosoTablet.alt);
-    const exams = page.locator("#beneficios article:has([data-photo-overlay])");
-    await expect(exams).toHaveCount(1);
-    await expect(exams.locator("img")).toHaveAttribute("alt", photos.exame.alt);
-    await expect(exams.locator("[data-photo-overlay]")).toHaveCount(1);
-  });
-
-  test("a rede de exames desenha cometas brancos sobre a foto", async ({ page }) => {
+  test("em 360 nenhuma opcao do radiogroup vaza da tela", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "medida do mobile");
+    await page.setViewportSize({ width: 360, height: 780 });
     await page.goto("/#beneficios");
     await page.mouse.wheel(0, 1);
-    await page.locator("#beneficios article:has([data-photo-overlay])").scrollIntoViewIfNeeded();
-    await expect(page.locator("#beneficios [data-comet]")).toHaveCount(8, { timeout: 4_000 });
+    await page.locator("#beneficios [role=radiogroup]").scrollIntoViewIfNeeded();
+    await expect(page.locator("#beneficios [role=radio]")).toHaveCount(4);
+    const overflowing = await page.evaluate(() => {
+      const width = document.documentElement.clientWidth;
+      return Array.from(document.querySelectorAll("#beneficios [role=radio]"))
+        .map((el) => ({
+          label: el.textContent ?? "",
+          right: el.getBoundingClientRect().right,
+        }))
+        .filter((option) => option.right > width);
+    });
+    expect(overflowing).toEqual([]);
+  });
+
+  test("com reduced motion o numero final ja esta no primeiro quadro e o cartao nasce opaco", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/#beneficios");
+    const digits = page.locator("#beneficios [data-digit]");
+    await expect(digits).toHaveCount(12);
+    // Estado do servidor: os digitos finais chegam no HTML, sem esperar tick nenhum.
+    expect((await digits.allTextContents()).join("")).toBe(mocks.cardSamples[0]);
+    await expect(page.locator("#beneficios [data-card-entry]")).toHaveCSS("opacity", "1");
   });
 });

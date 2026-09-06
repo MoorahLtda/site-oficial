@@ -16,4 +16,15 @@ test.describe("barra de CTA mobile", () => {
     await expect(page.locator("#planos")).toBeInViewport();
     await expect(page.getByTestId("cta-mobile")).toHaveCount(0);
   });
+
+  test("nao aparece com #contato em vista e o botao Enviar fica livre", async ({ page }) => {
+    await page.goto("/#contato");
+    await expect(page.locator("#contato")).toBeInViewport();
+    await expect(page.getByTestId("cta-mobile")).toHaveCount(0);
+    // Com a barra desmontada, o botao de envio do formulario nao fica sob nada fixo.
+    const submit = page.locator("#contato").getByRole("button", { name: "Enviar", exact: true });
+    await submit.scrollIntoViewIfNeeded();
+    await expect(submit).toBeVisible();
+    await expect(page.getByTestId("cta-mobile")).toHaveCount(0);
+  });
 });

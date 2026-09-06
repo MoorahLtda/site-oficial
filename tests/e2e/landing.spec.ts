@@ -29,7 +29,7 @@ test.describe("Landing Moorah Telemedicina", () => {
     const planos = page.locator("#planos");
     await expect(planos.getByText(/49,90/)).toBeVisible();
     await expect(planos.getByText(/129,90/)).toBeVisible();
-    // O valor por pessoa aparece no card do Familiar e no chip da foto (brief v2, item 1).
+    // O valor por pessoa aparece no card do Familiar (brief v4-secoes, 4.5).
     await expect(planos.getByText(/32,48/).first()).toBeVisible();
   });
 
@@ -88,7 +88,7 @@ test.describe("mobile", () => {
   test("CTA fixo aparece ao rolar e menu abre", async ({ page }) => {
     await page.goto("/");
     // A barra aparece quando o hero sai de vista. Rolar por secao em vez de por pixels:
-    // a altura do hero mobile muda com a foto, o cluster e a faixa de especialidades.
+    // a altura do hero mobile muda com a foto e com a quebra do titulo.
     await page.locator("#como-funciona").scrollIntoViewIfNeeded();
     await expect(page.getByTestId("cta-mobile")).toBeVisible();
     await page.getByRole("button", { name: /menu/i }).click();

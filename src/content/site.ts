@@ -51,7 +51,6 @@ export interface Plan {
   headline: string;
   features: readonly string[];
   highlight: boolean;
-  badge?: string;
   cta: string;
 }
 
@@ -90,7 +89,6 @@ export const plans: readonly Plan[] = [
       "Histórico e documentos de cada pessoa em um só lugar",
     ],
     highlight: true,
-    badge: "Mais escolhido",
     cta: "Assinar Familiar",
   },
 ] as const;
@@ -162,30 +160,28 @@ export type IconKey =
 
 export interface Specialty {
   name: string;
-  icon: IconKey;
   blurb: string;
 }
 
 export const specialties: readonly Specialty[] = [
-  { name: "Clínico geral", icon: "stethoscope", blurb: "Primeira porta para qualquer sintoma." },
-  { name: "Pediatria", icon: "baby", blurb: "Para os pequenos, a qualquer hora." },
-  { name: "Cardiologia", icon: "heart-pulse", blurb: "Acompanhamento de pressão e coração." },
-  { name: "Dermatologia", icon: "sparkles", blurb: "Pele, cabelo e unhas por vídeo." },
-  { name: "Ginecologia", icon: "flower", blurb: "Saúde da mulher em todas as fases." },
-  { name: "Ortopedia", icon: "bone", blurb: "Dores, lesões e orientação." },
-  { name: "Endocrinologia", icon: "activity", blurb: "Diabetes, tireoide e hormônios." },
-  { name: "Otorrinolaringologia", icon: "ear", blurb: "Ouvido, nariz e garganta." },
-  { name: "Oftalmologia", icon: "eye", blurb: "Orientação e acompanhamento visual." },
-  { name: "Geriatria", icon: "hand-heart", blurb: "Cuidado atento para quem tem mais história." },
-  { name: "Nutrição", icon: "apple", blurb: "Planos alimentares e acompanhamento." },
-  { name: "Psicologia", icon: "brain", blurb: "Acolhimento e saúde emocional." },
+  { name: "Clínico geral", blurb: "Primeira porta para qualquer sintoma." },
+  { name: "Pediatria", blurb: "Para os pequenos, a qualquer hora." },
+  { name: "Cardiologia", blurb: "Acompanhamento de pressão e coração." },
+  { name: "Dermatologia", blurb: "Pele, cabelo e unhas por vídeo." },
+  { name: "Ginecologia", blurb: "Saúde da mulher em todas as fases." },
+  { name: "Ortopedia", blurb: "Dores, lesões e orientação." },
+  { name: "Endocrinologia", blurb: "Diabetes, tireoide e hormônios." },
+  { name: "Otorrinolaringologia", blurb: "Ouvido, nariz e garganta." },
+  { name: "Oftalmologia", blurb: "Orientação e acompanhamento visual." },
+  { name: "Geriatria", blurb: "Cuidado atento para quem tem mais história." },
+  { name: "Nutrição", blurb: "Planos alimentares e acompanhamento." },
+  { name: "Psicologia", blurb: "Acolhimento e saúde emocional." },
 ] as const;
 
 export interface Step {
   n: number;
   title: string;
   text: string;
-  icon: IconKey;
 }
 
 export const steps: readonly Step[] = [
@@ -193,93 +189,21 @@ export const steps: readonly Step[] = [
     n: 1,
     title: "Agende online",
     text: "Escolha a especialidade, o médico e o horário pela plataforma. Sem telefone e sem fila.",
-    icon: "calendar-check",
   },
   {
     n: 2,
     title: "Receba lembretes",
     text: "Avisos automáticos na véspera, no dia e 30 minutos antes da consulta.",
-    icon: "bell-ring",
   },
   {
     n: 3,
     title: "Consulte por vídeo",
-    text: "Atendimento humano, pelo link seguro da própria plataforma, no celular ou computador.",
-    icon: "video",
+    text: "Médicos de verdade, por videochamada, pelo link seguro da própria plataforma, no celular ou no computador.",
   },
   {
     n: 4,
     title: "Documentos digitais",
     text: "Receitas, atestados e pedidos de exame ficam no seu portal, com validade em todo o Brasil.",
-    icon: "file-check",
-  },
-] as const;
-
-export interface Benefit {
-  title: string;
-  text: string;
-  icon: IconKey;
-}
-
-export const benefits: readonly Benefit[] = [
-  {
-    title: "Cartão Moorah",
-    text: "Cada titular e dependente recebe um cartão com numeração exclusiva de 12 dígitos: a chave para toda a rede de cuidado e vantagens.",
-    icon: "credit-card",
-  },
-  {
-    title: "Descontos em farmácias",
-    text: "Medicamentos com desconto na rede parceira. Basta informar o número do cartão no balcão.",
-    icon: "pill",
-  },
-  {
-    title: "Exames com desconto",
-    text: "Laboratórios e clínicas credenciadas com condições exclusivas, do exame de rotina ao diagnóstico por imagem.",
-    icon: "flask",
-  },
-  {
-    title: "Lojas e serviços parceiros",
-    text: "Condições especiais em estabelecimentos parceiros, do comércio local a grandes marcas.",
-    icon: "shopping-bag",
-  },
-  {
-    title: "Portal do paciente",
-    text: "Histórico de consultas, receitas, documentos e dependentes organizados em um só lugar.",
-    icon: "layout-dashboard",
-  },
-  {
-    title: "Segurança de verdade",
-    text: "Dados de saúde criptografados, infraestrutura no Brasil e sigilo médico garantido.",
-    icon: "shield-check",
-  },
-] as const;
-
-export interface Differentiator {
-  title: string;
-  text: string;
-  icon: IconKey;
-}
-
-export const differentiators: readonly Differentiator[] = [
-  {
-    title: "Tecnologia própria",
-    text: "Plataforma desenvolvida pela Moorah, do agendamento à consulta em vídeo, sem depender de aplicativos de terceiros.",
-    icon: "cpu",
-  },
-  {
-    title: "Atendimento humano",
-    text: "Médicos de verdade, por videochamada. A tecnologia organiza; quem cuida é gente.",
-    icon: "smile",
-  },
-  {
-    title: "Experiência simples",
-    text: "Agendou, foi lembrado, consultou. Sem telefone, sem papelada e sem fila.",
-    icon: "clock",
-  },
-  {
-    title: "Rede em crescimento",
-    text: "Novos parceiros de exames, farmácias e lojas entrando na rede continuamente.",
-    icon: "trending-up",
   },
 ] as const;
 
@@ -301,6 +225,8 @@ export const problems = [
 export interface FaqItem {
   q: string;
   a: string;
+  // Link opcional exibido apos a resposta (brief v4-secoes, 4.6).
+  link?: { href: string; label: string };
 }
 
 export const faq: readonly FaqItem[] = [
@@ -328,6 +254,14 @@ export const faq: readonly FaqItem[] = [
     q: "Posso usar em mais de um aparelho?",
     a: "Sim. A plataforma funciona no navegador do celular, tablet ou computador, sem precisar instalar nada.",
   },
+  {
+    // Substitui o antigo beneficio "Seguranca de verdade": afirma so o sigilo medico (dever legal)
+    // e remete a Politica de privacidade; criptografia e infraestrutura dependem de confirmacao
+    // da engenharia (docs/conteudo-a-confirmar.md).
+    q: "Meus dados de saúde estão protegidos?",
+    a: "Sim. Os dados de saúde ficam sob sigilo médico, e a Política de privacidade descreve quem acessa o quê e em que situações.",
+    link: { href: "/privacidade", label: "Ler a Política de privacidade" },
+  },
 ] as const;
 
 /*
@@ -341,15 +275,8 @@ export const legalLinks = [
   { slug: "lgpd", href: "/lgpd", label: "LGPD e seus direitos" },
 ] as const;
 
-/* ---------- Copy por secao (docs/design-brief.md, secao 11) ---------- */
+/* ---------- Copy por secao (docs/design-brief-v4-secoes.md e v4-hero.md) ---------- */
 /* Chaves com {price} sao substituidas pelo componente com formatBRL(...). */
-
-export interface HeroMoment {
-  icon: IconKey;
-  label: string;
-  text: string;
-  tone: "leaf" | "berry";
-}
 
 // Fato curto do pe do hero v4: valor em Plus Jakarta 600, legenda em Manrope. Sem icone, sem numero.
 export interface HeroFact {
@@ -366,14 +293,8 @@ export type HeroBulletSegment = string | { strong: string };
   Tokens {individual}, {familiar}, {people} e {price} sao resolvidos por fillPlanTokens.
   Sem "nao e plano de saude" (fica em Planos, rodape e termos), sem LGPD, sem nome do parceiro
   medico; a promessa comercial segue "qualquer especialidade" (decisoes do cliente de 04/09/2026).
-
-  Chaves marcadas como v3 (eyebrow, priceLine, trust, proofChips, clusterAlt, moments) ainda
-  alimentam hero-network, hero-rotating e hero-marquee; saem junto com esses arquivos na limpeza
-  final descrita no brief v4.
 */
 export const hero = {
-  // v3: sai na limpeza final.
-  eyebrow: "Telemedicina por assinatura",
   title: "Um médico por vídeo, quando você precisar.",
   // Linha 1 em Plus Jakarta 600 branco, linha 2 em 700 berry-100. Juntas formam hero.title.
   titleLines: ["Um médico por vídeo,", "quando você precisar."],
@@ -381,8 +302,6 @@ export const hero = {
   // Manrope 700 branco na propria frase, nunca em card nem em mono.
   prices: "Individual por {individual} por mês. Familiar por {familiar} para até {people} pessoas.",
   priceNote: "Sem taxa de adesão.",
-  // v3: sai na limpeza final (a frase de preco v4 e `prices` + `priceNote`).
-  priceLine: "A partir de {price} por mês, sem taxa de adesão.",
   primaryCta: "Escolher meu plano",
   secondaryCta: "Como funciona",
   // Pe do bloco: tres fatos verificaveis que nao repetem a lead nem a frase de preco.
@@ -406,31 +325,6 @@ export const hero = {
     [{ strong: "Agende e consulte" }, " pelo celular ou computador, sem instalar nada"],
   ] satisfies readonly (readonly HeroBulletSegment[])[],
   micro: "Assinatura mensal, sem taxa de adesão.",
-  // Sem "nao e plano de saude", 192 ou LGPD na pagina (pedido do cliente): isso vive nos documentos.
-  trust: "Médicos habilitados e telemedicina regulamentada no Brasil.",
-  proofChips: ["Qualquer especialidade", "Receitas com validade nacional", "Cartão Moorah incluso"],
-  clusterAlt:
-    "Ilustração de circuito: doze nós, um para cada especialidade, ligados por trilhas a um centro que representa a assinatura Moorah.",
-  moments: [
-    {
-      icon: "calendar-check",
-      label: "Consulta confirmada",
-      text: "Pediatria por vídeo",
-      tone: "leaf",
-    },
-    {
-      icon: "file-check",
-      label: "Receita digital emitida",
-      text: "Válida em todo o Brasil",
-      tone: "leaf",
-    },
-    {
-      icon: "bell-ring",
-      label: "Lembrete enviado",
-      text: "Sua consulta começa em 30 minutos",
-      tone: "berry",
-    },
-  ] satisfies readonly HeroMoment[],
 } as const;
 
 export const problemsSection = {
@@ -439,49 +333,51 @@ export const problemsSection = {
 } as const;
 
 export const manifesto = {
-  eyebrow: "Tudo em um lugar",
   title: "Chega de mil soluções separadas.",
   text: "Consulta, receita, exame, farmácia e histórico da família em uma única assinatura, com um só cartão e um só portal.",
-  nodes: [
-    "Consulta por vídeo",
-    "Receitas e atestados",
-    "Exames",
-    "Farmácias",
-    "Portal do paciente",
-  ],
-  hub: "Sua assinatura Moorah",
-  svgAlt:
-    "Cinco trilhas, consulta, receitas, exames, farmácias e portal, convergindo para um único nó: sua assinatura Moorah.",
 } as const;
 
 export const howItWorks = {
-  eyebrow: "Como funciona",
   title: "Agendou, foi lembrado, consultou.",
   lead: "Quatro passos, do agendamento ao documento digital, tudo dentro da plataforma da Moorah.",
 } as const;
 
 export const specialtiesSection = {
-  eyebrow: "Especialidades",
-  title: "Toda especialidade, um só lugar.",
+  title: "Qualquer especialidade, quantas vezes precisar",
+  lead: "Consultas ilimitadas em qualquer especialidade disponível na plataforma, sem custo adicional por consulta.",
 } as const;
 
 export const cardSection = {
   eyebrow: "Cartão Moorah",
   title: "Um número. Todos os benefícios.",
-  uses: ["Telemedicina", "Farmácias", "Exames", "Lojas parceiras"],
+  // Paragrafo de abertura do bloco fundido (era benefits[0].text).
+  lead: "Cada titular e dependente recebe um cartão com numeração exclusiva de 12 dígitos: a chave para toda a rede de cuidado e vantagens.",
+  // Lista tipografica do bloco fundido (brief v4-secoes, 4.4): quatro itens, sem icone.
+  benefits: [
+    {
+      title: "Descontos em farmácias",
+      text: "Medicamentos com desconto na rede parceira. Basta informar o número do cartão no balcão.",
+    },
+    {
+      title: "Exames com desconto",
+      text: "Laboratórios e clínicas credenciadas com condições exclusivas, do exame de rotina ao diagnóstico por imagem.",
+    },
+    {
+      title: "Lojas e serviços parceiros",
+      text: "Condições especiais em estabelecimentos parceiros, do comércio local a grandes marcas.",
+    },
+    {
+      title: "Portal do paciente",
+      text: "Histórico de consultas, receitas, documentos e dependentes organizados em um só lugar.",
+    },
+  ] as readonly { title: string; text: string }[],
   holderLabel: "Escolha o cartão",
   numberLabel: "Nº do cartão",
   sampleAria: "Exemplo de numeração, sem validade",
   imageAlt: "Cartão Moorah em tom ameixa escuro, com a amora em relevo e linhas onduladas.",
 } as const;
 
-export const benefitsSection = {
-  eyebrow: "Vantagens no dia a dia",
-  title: "Uma rede que acompanha a sua família.",
-  lead: "Exames, farmácias, lojas parceiras e o portal do paciente, tudo ligado ao seu Cartão Moorah.",
-} as const;
-
-// Rotulos de ilustracao. Nunca dados reais.
+// Rotulos de ilustracao do Cartao Moorah. Nunca dados reais.
 export const mocks = {
   cardHolders: [
     { value: "0", label: "Titular" },
@@ -491,32 +387,13 @@ export const mocks = {
   ],
   // Numeros ilustrativos de 12 digitos, fora de qualquer faixa de cartao bancario. Confirmar formato real.
   cardSamples: ["123456789012", "123456789013", "123456789014", "123456789015"],
-  reminderChips: ["Véspera", "Hoje", "30 min antes"],
-  reminderChip: "Lembrete: sua consulta começa em 30 minutos",
-  slotConfirmed: "Horário confirmado",
-  connected: "Conectado",
-  signed: "Assinado digitalmente",
-  cardNumberField: "Número do cartão",
-  cardRecognized: "Cartão reconhecido",
-  discountApplied: "Desconto aplicado na rede",
-  portalTabsLabel: "Áreas do portal",
-  portalTabs: ["Histórico", "Documentos", "Dependentes"],
-  statusDone: "Realizada",
-  statusScheduled: "Agendada",
-  documents: ["Receita digital", "Atestado", "Pedido de exame"],
-  securityChips: ["Criptografia", "Infraestrutura no Brasil", "Sigilo médico"],
 } as const;
 
 export const plansSection = {
   eyebrow: "Planos",
-  title: "Um plano para você ou para toda a família.",
-  lead: "Assinatura mensal, sem taxa de adesão. Escolha quantas pessoas vão usar e veja o valor por pessoa.",
-  peopleQuestion: "Para quantas pessoas?",
+  title: "Um plano para você ou para toda a família",
+  lead: "Assinatura mensal, sem taxa de adesão. O mesmo cuidado nos dois planos; muda só quantas pessoas usam.",
   perPersonLabel: "equivale a {price} por pessoa",
-  // Chip flutuante sobre a foto da familia. {price} recebe o valor por pessoa do Familiar.
-  photoChip: "{price} por pessoa no Familiar",
-  coversOne: "Cobre 1 pessoa.",
-  singleHint: "Faz mais sentido a partir de 2 pessoas.",
   familyNote: "O Familiar cobre até 4 pessoas pelo mesmo valor.",
   faqLink: "Entenda a diferença",
   includedTitle: "Incluído na assinatura",
@@ -531,15 +408,9 @@ export const plansSection = {
   notIncluded: [
     "Internação e cirurgia",
     "Atendimento presencial",
-    "Pronto-socorro e emergências",
-    "Cobertura de plano de saúde",
+    "Atendimento de urgência e emergência",
     "Custo de exames e medicamentos, que têm desconto na rede e são pagos pelo assinante",
   ],
-} as const;
-
-export const differentiatorsSection = {
-  eyebrow: "Diferenciais",
-  title: "Por que a Moorah.",
 } as const;
 
 // Microcopy de interface.
@@ -564,15 +435,15 @@ export const ui = {
     photoCredit: "Fotografias ilustrativas (Pexels)",
   },
   leadForm: {
-    title: "Quero saber mais",
-    subtitle: "Deixe seu contato e retornamos por e-mail.",
+    title: "Fale com a Moorah",
+    subtitle: "Deixe seu contato e a Moorah retorna por e-mail.",
     name: "Nome",
     email: "E-mail",
     whatsapp: "WhatsApp (opcional)",
     whatsappPlaceholder: "(11) 99999-1234",
     plan: "Plano de interesse",
     consent: "Li e aceito a Política de privacidade e autorizo o contato da Moorah.",
-    submit: "Quero assinar",
+    submit: "Enviar",
     sending: "Enviando...",
     successTitle: "Recebemos seu pedido.",
     successText: "Vamos entrar em contato pelo e-mail informado.",
@@ -590,14 +461,12 @@ export const ui = {
 } as const;
 
 export const faqSection = {
-  eyebrow: "Dúvidas frequentes",
-  title: "Perguntas que recebemos com frequência.",
+  title: "O que perguntam antes de assinar",
   contactTitle: "Ainda com dúvida?",
   contactText: "Escreva para a gente e respondemos pelo e-mail.",
 } as const;
 
 export const finalCta = {
-  eyebrow: "Comece hoje",
   title: "Saúde acessível para quem importa.",
   text: "Escolha o plano e agende a primeira consulta por vídeo pela plataforma da Moorah. Sem fila e sem taxa de adesão.",
   primaryCta: "Escolher meu plano",
@@ -636,22 +505,15 @@ export type PhotoKey =
   | "heroFamilia"
   | "heroMaeFilha"
   | "heroSenior"
-  | "heroPaciente"
-  | "medicaSorrindo"
-  | "medicoVideo"
-  | "medicaHeadset"
   | "idosoTablet"
-  | "familiaSofa"
-  | "familiaCasa"
-  | "exame"
-  | "pacienteCama";
+  | "pessoaCasa";
 
 export const photos: Record<PhotoKey, Photo> = {
   /*
     Hero v4 (docs/design-brief-v4-hero.md). Pessoas comuns em casa, sem jaleco, olhar fora da
     camera, luz de janela; todas verificadas no CDN em w=1920 (HTTP 200, image/jpeg, 1920x1280).
     heroCasa: hero principal. heroFamilia: variante de preview. heroMaeFilha e heroSenior:
-    alternativas para o cliente escolher e candidatas a Planos e Especialidades.
+    alternativas para o cliente escolher (site.hero.test.ts confere as quatro).
   */
   heroCasa: pexels(
     "17489833",
@@ -681,116 +543,22 @@ export const photos: Record<PhotoKey, Photo> = {
     "Senhor de cabelo branco e camisa polo clara, sentado no sofá da sala de casa, sorrindo enquanto mexe no celular.",
     1920,
   ),
-  heroPaciente: pexels(
-    "7195087",
-    1600,
-    1067,
-    "Mulher sentada no sofá de casa, com fones, em consulta por vídeo com uma médica pelo notebook.",
-  ),
-  medicaSorrindo: pexels(
-    "19957213",
-    1200,
-    1800,
-    "Médica sorridente, de jaleco e estetoscópio, anotando durante uma consulta por vídeo gravada pelo celular.",
-  ),
-  medicoVideo: pexels(
-    "39192424",
-    1600,
-    900,
-    "Médico de jaleco em seu consultório, atendendo um paciente por videochamada no notebook.",
-  ),
-  medicaHeadset: pexels(
-    "7195090",
-    1600,
-    1067,
-    "Médica de uniforme verde e headset acenando para a paciente durante uma consulta online.",
-  ),
   idosoTablet: pexels(
     "8376171",
     1600,
     1067,
     "Senhor em casa conversando com a médica pelo tablet, com os medicamentos organizados na mesa.",
   ),
-  familiaSofa: pexels(
-    "39191102",
+  /*
+    Secao "Por que" (brief v4-secoes, 4.1 e 6): mae e filha preparando lanche na mesa da cozinha,
+    luz natural, olhar fora da camera, sem celular, tablet ou notebook no quadro, sem marcas.
+    Original 3337x5000 (2:3); CDN verificado em w=1600 (HTTP 200, image/jpeg, 1600x2397).
+    Fotografo: August de Richelieu (Pexels).
+  */
+  pessoaCasa: pexels(
+    "4259710",
     1600,
-    900,
-    "Pai, mãe e filho abraçados e sorrindo no sofá da sala.",
-  ),
-  familiaCasa: pexels(
-    "7114188",
-    1600,
-    1067,
-    "Família com três crianças de mãos dadas em uma sala clara e ampla.",
-  ),
-  exame: pexels(
-    "8460346",
-    1200,
-    1800,
-    "Profissional de laboratório com luvas segurando um tubo de amostra de sangue.",
-  ),
-  pacienteCama: pexels(
-    "8376211",
-    1200,
-    1800,
-    "Tablet apoiado na cama mostrando um médico em consulta por vídeo, ao lado de uma caixa de remédios.",
+    2397,
+    "Mãe e filha preparando um lanche juntas na mesa da cozinha, com luz natural da janela.",
   ),
 };
-
-/*
-  Dinamica do hero (v2): frase que alterna na segunda linha do titulo e eventos do produto que
-  circulam nos cards flutuantes. Ver docs/design-brief-v2.md.
-*/
-export const heroDynamic = {
-  titleStatic: "Consultas médicas ilimitadas,",
-  rotating: ["sem fila.", "para toda a família.", "em qualquer especialidade.", "no seu celular."],
-  rotateEveryMs: 2800,
-  eventEveryMs: 4200,
-  events: [
-    {
-      icon: "calendar-check",
-      label: "Consulta confirmada",
-      text: "Cardiologia por vídeo",
-      tone: "leaf",
-      node: 2,
-    },
-    {
-      icon: "bell-ring",
-      label: "Lembrete enviado",
-      text: "Sua consulta começa em 30 minutos",
-      tone: "berry",
-      node: null,
-    },
-    {
-      icon: "file-check",
-      label: "Receita digital emitida",
-      text: "Válida em todo o Brasil",
-      tone: "leaf",
-      node: 0,
-    },
-    {
-      icon: "pill",
-      label: "Cartão reconhecido",
-      text: "Desconto aplicado na farmácia",
-      tone: "leaf",
-      node: null,
-    },
-    {
-      icon: "baby",
-      label: "Consulta confirmada",
-      text: "Pediatria por vídeo",
-      tone: "leaf",
-      node: 1,
-    },
-    {
-      icon: "flask",
-      label: "Exame com desconto",
-      text: "Laboratório da rede parceira",
-      tone: "leaf",
-      node: null,
-    },
-  ],
-  stripLabel: "Especialidades disponíveis",
-} as const;
-
-export type HeroEvent = (typeof heroDynamic.events)[number];

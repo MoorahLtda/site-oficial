@@ -149,8 +149,10 @@ export function Header() {
                     ·
                   </span>
                 ) : null}
+                {/* prefetch desligado: no build estatico o arquivo que ele busca nao existe. */}
                 <Link
                   href={link.href}
+                  prefetch={false}
                   className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors duration-200 ease-out-expo hover:text-gray-900"
                 >
                   {link.label}
@@ -282,6 +284,7 @@ export function Header() {
                       <DialogClose asChild>
                         <Link
                           href={link.href}
+                          prefetch={false}
                           className="block min-h-11 py-2.5 font-sans text-base font-semibold text-gray-700 transition-colors duration-200 hover:text-gray-900"
                         >
                           {link.label}

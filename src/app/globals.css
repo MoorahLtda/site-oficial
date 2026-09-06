@@ -76,7 +76,6 @@
   --animate-fade-in: fade-in 250ms var(--ease-out-expo);
   --animate-zoom-in: zoom-in 300ms var(--ease-out-expo);
   --animate-slide-in-right: slide-in-right 380ms var(--ease-out-expo);
-  --animate-pulse-once: pulse-once 500ms var(--ease-out-expo);
   --animate-float-slow: float 7s ease-in-out infinite;
   --animate-drift: drift 18s ease-in-out infinite alternate;
   --animate-comet: comet 4.5s linear infinite;
@@ -177,15 +176,6 @@
     }
     to {
       stroke-dashoffset: 0;
-    }
-  }
-  @keyframes pulse-once {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.03);
     }
   }
   /* Unico movimento do hero v4: opacidade 0 -> 1 na foto; reduced motion zera pela regra global. */

@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 import { ComoFunciona } from "@/components/sections/como-funciona";
-import { Diferenciais } from "@/components/sections/diferenciais";
 import { Especialidades } from "@/components/sections/especialidades";
 import { Footer } from "@/components/sections/footer";
 import { Header } from "@/components/sections/header";
@@ -11,26 +10,36 @@ import { SectionSkeleton } from "@/components/ui/section-skeleton";
 import { plans, site } from "@/content/site";
 
 /*
-  Composicao da landing (docs/design-brief.md, secao 6). As quatro primeiras secoes saem no HTML
-  inicial; as demais entram por next/dynamic (sem ssr:false: o servidor continua renderizando o
-  HTML, so o chunk cliente e adiado) com SectionSkeleton reservando a altura para evitar CLS.
+  Composicao da landing (docs/design-brief-v4-secoes.md, secao 2). As quatro primeiras secoes saem
+  no HTML inicial; as demais entram por next/dynamic (sem ssr:false: o servidor continua
+  renderizando o HTML, so o chunk cliente e adiado) com SectionSkeleton reservando a altura para
+  evitar CLS. Diferenciais saiu da pagina e o Cartao virou o bloco fundido #beneficios.
 */
 
-const Cartao = dynamic(() => import("@/components/sections/cartao").then((mod) => mod.Cartao), {
-  loading: () => <SectionSkeleton minHeight="min-h-[640px]" />,
-});
+/*
+  Alturas minimas do skeleton = altura real de cada secao, medida no navegador depois do brief
+  v4-secoes (integracao final, secao 7). Base = 390 px de viewport; lg = 1024; xl = 1440, usado
+  so onde a diferenca entre 1024 e 1440 passa de 20 px (Beneficios muda de 2 para 1 coluna de
+  texto, Contato reflui o h2). Remedir sempre que a copy ou o layout de uma secao mudar: skeleton
+  curto demais empurra a pagina para baixo na hidratacao, e alto demais puxa para cima; os dois
+  contam como CLS.
+*/
 const Beneficios = dynamic(
   () => import("@/components/sections/beneficios").then((mod) => mod.Beneficios),
-  { loading: () => <SectionSkeleton minHeight="min-h-[900px]" /> },
+  {
+    loading: () => (
+      <SectionSkeleton minHeight="min-h-[1355px] lg:min-h-[1035px] xl:min-h-[930px]" />
+    ),
+  },
 );
 const Planos = dynamic(() => import("@/components/sections/planos").then((mod) => mod.Planos), {
-  loading: () => <SectionSkeleton minHeight="min-h-[960px]" />,
+  loading: () => <SectionSkeleton minHeight="min-h-[2390px] lg:min-h-[1430px]" />,
 });
 const Duvidas = dynamic(() => import("@/components/sections/duvidas").then((mod) => mod.Duvidas), {
-  loading: () => <SectionSkeleton minHeight="min-h-[720px]" />,
+  loading: () => <SectionSkeleton minHeight="min-h-[1075px] lg:min-h-[930px]" />,
 });
 const Contato = dynamic(() => import("@/components/sections/contato").then((mod) => mod.Contato), {
-  loading: () => <SectionSkeleton minHeight="min-h-[640px]" />,
+  loading: () => <SectionSkeleton minHeight="min-h-[1170px] lg:min-h-[890px] xl:min-h-[870px]" />,
 });
 
 // Dados estruturados (schema.org). Tudo vem de site.ts: nada de avaliacoes, notas ou selos.
@@ -100,10 +109,8 @@ export default function Home() {
         <PorQue />
         <ComoFunciona />
         <Especialidades />
-        <Cartao />
         <Beneficios />
         <Planos />
-        <Diferenciais />
         <Duvidas />
         <Contato />
       </main>

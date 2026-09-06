@@ -1,29 +1,66 @@
 import { expect, test } from "@playwright/test";
-import { getPlan, photos } from "../../src/content/site";
+import { plansSection } from "../../src/content/site";
 
 test.describe("Planos", () => {
-  test("escolher 2 pessoas atualiza o valor por pessoa do Familiar", async ({ page }) => {
+  test("mostra os tres valores sem interacao, sem foto, sem seletor e sem badge", async ({
+    page,
+  }) => {
     await page.goto("/#planos");
     const planos = page.locator("#planos");
-    await planos.getByRole("radio", { name: "2" }).click();
-    // Timeout padrao (10 s): sob carga a secao dinamica e a hidratacao chegam a passar de 2 s.
-    await expect(planos.getByText(/64,95/)).toBeVisible();
+    await expect(planos.getByText(/49,90/)).toBeVisible();
+    await expect(planos.getByText(/129,90/)).toBeVisible();
+    await expect(planos.getByText(/32,48/)).toBeVisible();
+    await expect(planos.locator("img")).toHaveCount(0);
+    await expect(planos.locator("[role=radiogroup]")).toHaveCount(0);
+    await expect(planos.getByText(/Mais escolhido/)).toHaveCount(0);
+    await expect(planos.locator("[data-plan-chip]")).toHaveCount(0);
   });
 
-  test("escolher 1 pessoa destaca o Individual e mostra a dica", async ({ page }) => {
+  test("o Familiar leva o anel de destaque e o painel lista o que entra e o que nao entra", async ({
+    page,
+  }) => {
     await page.goto("/#planos");
     const planos = page.locator("#planos");
-    await planos.getByRole("radio", { name: "1" }).click();
-    await expect(planos.locator('[data-plan="individual"]')).toHaveAttribute("data-active", "true");
-    await expect(planos.getByText(/a partir de 2 pessoas/i)).toBeVisible();
+    const familiar = planos.locator('article[data-plan="familiar"]');
+    await expect(familiar).toBeVisible();
+    await expect(familiar).toHaveClass(/ring-2/);
+    await expect(familiar).not.toHaveClass(/bg-ink/);
+    const included = planos.getByRole("list", { name: plansSection.includedTitle });
+    const notIncluded = planos.getByRole("list", { name: plansSection.notIncludedTitle });
+    await expect(included.getByRole("listitem")).toHaveCount(plansSection.included.length);
+    await expect(notIncluded.getByRole("listitem")).toHaveCount(plansSection.notIncluded.length);
   });
+});
 
-  test("a foto da familia aparece com o chip flutuante do Familiar", async ({ page }) => {
-    await page.goto("/#planos");
+test.describe("Planos com reduced motion", () => {
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
+
+  test("os precos chegam opacos, sem depender de animacao", async ({ page }) => {
+    await page.goto("/#planos", { waitUntil: "domcontentloaded" });
     const planos = page.locator("#planos");
-    await expect(planos.locator("img").first()).toHaveAttribute("alt", photos.familiaSofa.alt);
-    const chip = planos.locator("[data-plan-chip]");
-    await expect(chip).toBeVisible();
-    await expect(chip).toContainText(getPlan("familiar").name);
+    const familiar = planos.locator('article[data-plan="familiar"]');
+    // A secao e dinamica e chega por streaming, entao espera-se so o ATTACHED. Aqui se le o
+    // estilo computado, nao isVisible(): no quadro em que o card nasce o layout ainda nao correu
+    // e a medida de visibilidade seria uma corrida. O que o criterio 7 do brief exige e que
+    // preco e botao nunca cheguem ao HTML com opacity 0 esperando animacao.
+    await familiar.waitFor({ state: "attached" });
+    const opacidades = await familiar.evaluate((card) => {
+      const alvo = [...card.querySelectorAll("*")].find(
+        (node) => /129,90/.test(node.textContent ?? "") && node.children.length === 0,
+      );
+      const cadeia: string[] = [];
+      for (let node = alvo as Element | null; node && node !== card.parentElement; ) {
+        cadeia.push(getComputedStyle(node).opacity);
+        node = node.parentElement;
+      }
+      return cadeia;
+    });
+    expect(opacidades.length).toBeGreaterThan(0);
+    expect(opacidades.every((valor) => valor === "1")).toBe(true);
+
+    // E, sem nenhuma interacao nem rolagem, os tres valores ficam visiveis.
+    for (const valor of [/49,90/, /129,90/, /32,48/]) {
+      await expect(planos.getByText(valor)).toBeVisible();
+    }
   });
 });

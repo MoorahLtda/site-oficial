@@ -33,9 +33,11 @@ describe("Footer", () => {
     );
   });
 
-  it("mostra o crédito das fotografias e nenhuma nota legal", () => {
+  it("mostra o crédito das fotografias sem ponto decorativo e nenhuma nota legal", () => {
     renderWithMotion(<Footer />);
-    expect(screen.getByText("Fotografias ilustrativas (Pexels)")).toBeInTheDocument();
+    const credit = screen.getByText("Fotografias ilustrativas (Pexels)");
+    // O ponto berry antes do crédito saiu (brief v4-secoes, 4.8): ornamento sem função.
+    expect(credit.querySelector("span")).toBeNull();
     expect(screen.getByRole("link", { name: "LGPD e seus direitos" })).toHaveAttribute(
       "href",
       "/lgpd",

@@ -1,28 +1,34 @@
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import {
-  formatBRL,
-  getPlan,
-  perPersonCents,
-  photos,
-  planNotes,
-  plans,
-  plansSection,
-} from "@/content/site";
+import { describe, expect, it } from "vitest";
+import { planNotes, plans, plansSection } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Planos } from "./planos";
 
-vi.mock("motion/react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("motion/react")>();
-  return { ...actual, useInView: () => true, useReducedMotion: () => true };
-});
-
 describe("Planos", () => {
-  it("e uma secao #planos rotulada pelo h2, com a nota comercial e o link para as duvidas", () => {
+  it("e uma secao #planos soft, com heading centrado rotulando a secao e a lead", () => {
     renderWithMotion(<Planos />);
     const section = screen.getByRole("region", { name: plansSection.title });
     expect(section).toHaveAttribute("id", "planos");
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(plansSection.title);
+    expect(section).toHaveClass("bg-gray-50");
+    const heading = screen.getByRole("heading", { level: 2 });
+    expect(heading).toHaveTextContent(plansSection.title);
+    expect(heading.parentElement).toHaveClass("text-center");
+    expect(screen.getByText(plansSection.lead)).toBeInTheDocument();
+    expect(screen.getByText(plansSection.eyebrow)).toHaveClass("eyebrow");
+  });
+
+  it("mostra os dois precos e o valor por pessoa sem interacao, com os dois CTAs", () => {
+    renderWithMotion(<Planos />);
+    expect(screen.getByText(/49,90/)).toBeInTheDocument();
+    expect(screen.getByText(/129,90/)).toBeInTheDocument();
+    expect(screen.getByText(/32,48/)).toBeInTheDocument();
+    for (const plan of plans) {
+      expect(screen.getByRole("button", { name: plan.cta })).toBeInTheDocument();
+    }
+  });
+
+  it("traz a nota comercial com o link para as duvidas", () => {
+    renderWithMotion(<Planos />);
     expect(screen.getByText(planNotes[0], { exact: false })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: plansSection.faqLink })).toHaveAttribute(
       "href",
@@ -30,40 +36,37 @@ describe("Planos", () => {
     );
   });
 
-  it("lista 5 itens incluidos e 5 nao incluidos, sem callout de emergencia", () => {
+  it("o painel lista incluidos e nao incluidos sem caixa e sem hairline", () => {
     renderWithMotion(<Planos />);
     const included = screen.getByRole("list", { name: plansSection.includedTitle });
     const notIncluded = screen.getByRole("list", { name: plansSection.notIncludedTitle });
-    expect(within(included).getAllByRole("listitem")).toHaveLength(5);
-    expect(within(notIncluded).getAllByRole("listitem")).toHaveLength(5);
-    expect(screen.queryByText(/192/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/SAMU/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/LGPD/)).not.toBeInTheDocument();
+    expect(within(included).getAllByRole("listitem")).toHaveLength(plansSection.included.length);
+    expect(within(notIncluded).getAllByRole("listitem")).toHaveLength(
+      plansSection.notIncluded.length,
+    );
+    // Sem caixa (border/bg/sombra) em volta do painel: separacao por respiro (principio 13).
+    const panel = included.closest("div")?.parentElement as HTMLElement;
+    expect(panel.className).not.toMatch(/border|bg-white|shadow/);
   });
 
-  it("mostra os dois precos e os dois CTAs", () => {
+  it("destaca o Familiar por anel, sem fundo escuro", () => {
     renderWithMotion(<Planos />);
-    expect(screen.getByText(/49,90/)).toBeInTheDocument();
-    expect(screen.getByText(/129,90/)).toBeInTheDocument();
-    for (const plan of plans) {
-      expect(screen.getByRole("button", { name: plan.cta })).toBeInTheDocument();
+    const familiar = document.querySelector('article[data-plan="familiar"]');
+    expect(familiar).toHaveClass("ring-2");
+    expect(familiar).not.toHaveClass("bg-ink");
+  });
+
+  it("nao tem foto, chip, seletor de pessoas, badge nem termos vetados", () => {
+    renderWithMotion(<Planos />);
+    const section = document.getElementById("planos") as HTMLElement;
+    expect(section.querySelector("img")).toBeNull();
+    expect(section.querySelector("[data-plan-chip]")).toBeNull();
+    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Mais escolhido/)).not.toBeInTheDocument();
+    for (const h3 of section.querySelectorAll("h3")) {
+      expect(h3.className).not.toContain("uppercase");
     }
-  });
-
-  it("mostra a foto da familia ao lado do heading, com chip flutuante do Familiar", () => {
-    renderWithMotion(<Planos />);
-    const img = screen.getByAltText(photos.familiaSofa.alt);
-    expect(img).toHaveAttribute("loading", "lazy");
-    expect(img.getAttribute("sizes")).toContain("(min-width: 1024px)");
-    expect(img.parentElement).toHaveClass("aspect-video", "overflow-hidden", "rounded-3xl");
-
-    const chip = document.querySelector("[data-plan-chip]");
-    const familiar = getPlan("familiar");
-    // O chip ancora o preco: valor por pessoa do Familiar (R$ 32,48) com a copy de site.ts.
-    const perPerson = formatBRL(perPersonCents(familiar)).replace(/ /g, " ");
-    expect(chip?.textContent?.replace(/ /g, " ")).toContain(perPerson);
-    expect(chip).toHaveTextContent(plansSection.photoChip.split("{price}")[1].trim());
-    expect(chip).toHaveClass("animate-float-slow", "bg-white", "shadow-float", "font-display");
-    expect(chip).not.toHaveClass("font-mono");
+    expect(section.textContent).not.toMatch(/\b192\b|SAMU|LGPD|plano de saúde/i);
+    expect(section.querySelector(".font-mono")).toBeNull();
   });
 });

@@ -63,7 +63,7 @@ lucide-react + Radix (accordion/dialog). Testes: Vitest + Testing Library e Play
   auto-hospedadas via `@fontsource-variable/*` importadas em `layout.tsx`.
 - O preview do Claude Code le o `.claude/launch.json` do diretorio da sessao; a configuracao
   `moorah-site` la apenas anexa em `http://localhost:3000`. Suba o dev server com `npm run dev -- -p 3000`.
-- Design: `docs/design-brief.md` e a fonte de verdade das secoes (direcao "Trilha da Amora").
+- Design: `docs/design-brief-v4-secoes.md` e a fonte de verdade das secoes fora do hero; o hero segue `docs/design-brief-v4-hero.md`. A v1 (`docs/design-brief.md`) e a v2 ficam como historico e valem so onde a v4 nao fala.
 
 ## Armadilhas ja encontradas neste projeto
 

@@ -1,5 +1,6 @@
 import { Mail, MessageCircle } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -177,21 +178,27 @@ export function Footer() {
 
           {/* Legal */}
           <Column label={columnLabels.legal} className="lg:col-span-2">
+            {/*
+              Rota interna vai de <Link>, nunca de <a>: o <a> nao recebe o basePath e quebraria
+              o link quando o site e publicado em um subcaminho (GitHub Pages). `prefetch={false}`
+              porque no build estatico o arquivo que o prefetch busca nao existe (404 no console);
+              a navegacao continua igual, so nao antecipa.
+            */}
             <ul className="mt-4 space-y-1 lg:space-y-2">
               <li>
-                <a href="/termos" className={footerLink}>
+                <Link href="/termos" prefetch={false} className={footerLink}>
                   {ui.footer.terms}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacidade" className={footerLink}>
+                <Link href="/privacidade" prefetch={false} className={footerLink}>
                   {ui.footer.privacy}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/lgpd" className={footerLink}>
+                <Link href="/lgpd" prefetch={false} className={footerLink}>
                   {columnLabels.lgpd}
-                </a>
+                </Link>
               </li>
             </ul>
           </Column>
@@ -236,13 +243,8 @@ export function Footer() {
 
           {/* Linha inferior */}
           <div className="mt-2 flex flex-col gap-3 border-t border-gray-200 pt-6 text-[13px] leading-relaxed text-gray-600 lg:col-span-12 lg:mt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-            <p className="flex items-start gap-2">
-              <span
-                aria-hidden="true"
-                className="mt-[7px] size-1 shrink-0 rounded-full bg-berry-300"
-              />
-              {photoCredit}
-            </p>
+            {/* Sem ponto berry antes do credito: ornamento sem funcao (brief v4-secoes, 4.8). */}
+            <p>{photoCredit}</p>
             <p className="shrink-0 tabular-nums">
               &copy; {year} {site.legalName}
               {cnpj ? ` · CNPJ ${cnpj}` : null}

@@ -1,84 +1,71 @@
-import { screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { benefits, benefitsSection, mocks, photos } from "@/content/site";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { cardSection, plans } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Beneficios } from "./beneficios";
 
-// Os mocks animados entram por next/dynamic; aqui interessa a estrutura do bento (server).
-vi.mock("next/dynamic", () => ({
-  default: () => () => <div data-testid="mock-dinamico" />,
-}));
+/*
+  Bloco fundido Cartao + Beneficios (brief v4-secoes, 4.4): unico bloco plum id=beneficios.
+  O palco do cartao entra por next/dynamic de verdade (sem mock): os casos que precisam dele
+  usam findByRole e esperam o chunk resolver.
+*/
 
-describe("Beneficios", () => {
-  it("renderiza 5 cards h3 com benefits[1..5] na ordem do bento", () => {
-    renderWithMotion(<Beneficios />);
-    const headings = screen.getAllByRole("heading", { level: 3 });
-    expect(headings).toHaveLength(5);
-    const titles = headings.map((h) => h.textContent);
-    expect(titles).toEqual([
-      benefits[4].title,
-      benefits[2].title,
-      benefits[1].title,
-      benefits[3].title,
-      benefits[5].title,
-    ]);
-    // O Cartao Moorah (benefits[0]) tem secao propria.
-    expect(screen.queryByRole("heading", { level: 3, name: benefits[0].title })).toBeNull();
-  });
-
-  it("usa Section com id beneficios rotulada pelo h2", () => {
+describe("Beneficios (bloco fundido com o Cartao)", () => {
+  it("usa Section plum com id beneficios, wrapper rounded-3xl text-white e aria-labelledby do h2", () => {
     renderWithMotion(<Beneficios />);
     const section = document.getElementById("beneficios");
     expect(section?.tagName).toBe("SECTION");
-    const h2 = screen.getByRole("heading", { level: 2, name: benefitsSection.title });
+    const wrapper = section?.querySelector(".rounded-3xl");
+    expect(wrapper).toHaveClass("text-white");
+    const h2 = screen.getByRole("heading", { level: 2, name: cardSection.title });
     expect(h2.id).toBeTruthy();
     expect(section).toHaveAttribute("aria-labelledby", h2.id);
-    expect(screen.getByText(benefitsSection.eyebrow)).toBeInTheDocument();
-    expect(screen.getByText(benefitsSection.lead)).toBeInTheDocument();
   });
 
-  it("card de seguranca lista os chips de mocks.securityChips", () => {
+  it("abre com o eyebrow em berry-300 e o paragrafo do cartao como lead", () => {
     renderWithMotion(<Beneficios />);
-    const card = screen
-      .getByRole("heading", { level: 3, name: benefits[5].title })
-      .closest("article");
-    if (!card) throw new Error("card de seguranca nao encontrado");
-    const list = within(card).getByRole("list");
-    const items = within(list).getAllByRole("listitem");
-    expect(items.map((li) => li.textContent)).toEqual([...mocks.securityChips]);
+    const eyebrow = screen.getByText(cardSection.eyebrow);
+    expect(eyebrow).toHaveClass("eyebrow", "text-berry-300");
+    expect(screen.getByText(cardSection.lead)).toBeInTheDocument();
   });
 
-  it("os tres mocks entram por next/dynamic", () => {
+  it("lista 4 beneficios como h3 na ordem de cardSection.benefits, com os textos", () => {
     renderWithMotion(<Beneficios />);
-    expect(screen.getAllByTestId("mock-dinamico")).toHaveLength(3);
+    const headings = screen.getAllByRole("heading", { level: 3 });
+    expect(headings.map((h) => h.textContent)).toEqual(
+      cardSection.benefits.map((benefit) => benefit.title),
+    );
+    for (const benefit of cardSection.benefits) {
+      expect(screen.getByText(benefit.text)).toBeInTheDocument();
+    }
   });
 
-  it("a celula Portal tem a foto do idoso no tablet como cabecalho em aspect-video", () => {
+  it("no DOM a ordem e heading, palco do cartao, lista (ordem visual do mobile)", async () => {
     renderWithMotion(<Beneficios />);
-    const card = screen
-      .getByRole("heading", { level: 3, name: benefits[4].title })
-      .closest("article");
-    if (!card) throw new Error("card do portal nao encontrado");
-    const img = within(card).getByAltText(photos.idosoTablet.alt);
-    expect(img).toHaveAttribute("loading", "lazy");
-    expect(img.getAttribute("sizes")).toContain("(min-width: 1024px)");
-    expect(img.parentElement).toHaveClass("aspect-video", "overflow-hidden");
-    expect(card).toHaveClass("overflow-hidden");
-    expect(card.querySelector("[data-tile-header]")).not.toBeNull();
-    expect(card.querySelector("[data-photo-overlay]")).toBeNull();
+    const h2 = screen.getByRole("heading", { level: 2, name: cardSection.title });
+    const stage = await screen.findByRole("radiogroup", { name: cardSection.holderLabel });
+    const list = screen.getByRole("list");
+    expect(h2.compareDocumentPosition(stage) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(stage.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("a celula Exames usa a foto de exame como fundo, com overlay plum e texto branco", () => {
+  it("o palco entra por next/dynamic com o radiogroup, o cartao e a nota", async () => {
     renderWithMotion(<Beneficios />);
-    const card = screen
-      .getByRole("heading", { level: 3, name: benefits[2].title })
-      .closest("article");
-    if (!card) throw new Error("card de exames nao encontrado");
-    expect(card).toHaveClass("text-white", "isolate");
-    const img = within(card).getByAltText(photos.exame.alt);
-    expect(img).toHaveAttribute("loading", "lazy");
-    const overlay = card.querySelector("[data-photo-overlay]");
-    expect(overlay).toHaveAttribute("aria-hidden", "true");
-    expect(overlay).toHaveClass("absolute", "inset-0");
+    const group = await screen.findByRole("radiogroup", { name: cardSection.holderLabel });
+    expect(group).toBeInTheDocument();
+    expect(await screen.findByAltText(cardSection.imageAlt)).toBeInTheDocument();
+    expect(screen.getByText(plans[1].features[1])).toBeInTheDocument();
+  });
+
+  it("nao traz lockup, tablist, svg nem fotografia dentro do bloco", async () => {
+    renderWithMotion(<Beneficios />);
+    await screen.findByRole("radiogroup", { name: cardSection.holderLabel });
+    const section = document.getElementById("beneficios");
+    expect(section?.querySelector("[data-brand-lockup]")).toBeNull();
+    expect(section?.querySelector("[role=tablist]")).toBeNull();
+    expect(section?.querySelectorAll("svg")).toHaveLength(0);
+    // Uma unica img: o cartao (objeto da marca); nenhuma foto de photos.* no bloco.
+    expect(section?.querySelectorAll("img")).toHaveLength(1);
+    expect(section?.querySelectorAll("[data-use]")).toHaveLength(0);
   });
 });

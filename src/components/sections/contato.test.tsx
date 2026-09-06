@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import type { ComponentType } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { finalCta, photos, ui } from "@/content/site";
+import { finalCta, ui } from "@/content/site";
 import { renderWithMotion } from "@/test/render";
 import { Contato } from "./contato";
 
@@ -42,8 +42,8 @@ vi.mock("@/content/site", async (importOriginal) => {
   };
 });
 
-// O IntersectionObserver de tests/setup.ts nunca dispara; com reduced motion o cluster
-// renderiza o estado final (trilhas desenhadas) sem timers.
+// O IntersectionObserver de tests/setup.ts nunca dispara; com reduced motion o Reveal do card
+// renderiza o estado final sem timers.
 vi.mock("motion/react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("motion/react")>();
   return { ...actual, useInView: () => true, useReducedMotion: () => true };
@@ -54,41 +54,57 @@ describe("Contato", () => {
     whatsappMock.mockReturnValue("");
   });
 
-  it("renderiza a secao #contato em plum rotulada pelo h2 com finalCta.title", () => {
+  it("renderiza a secao #contato em plum rotulada pelo h2, sem eyebrow", () => {
     renderWithMotion(<Contato />);
     const heading = screen.getByRole("heading", { level: 2, name: finalCta.title });
     const section = document.getElementById("contato");
     expect(section?.tagName).toBe("SECTION");
     expect(section).toHaveAttribute("aria-labelledby", heading.id);
     expect(section?.firstElementChild).toHaveClass("rounded-3xl", "text-white");
-    expect(screen.getByText(finalCta.eyebrow)).toHaveClass("eyebrow", "text-berry-300");
+    // Hierarquia por peso, nao por ornamento: semibold, sem tracking-tight adicional.
+    expect(heading).toHaveClass("font-display", "font-semibold");
+    expect(heading).not.toHaveClass("font-bold", "tracking-tight");
     expect(screen.getByText(finalCta.text)).toBeInTheDocument();
+    // O eyebrow "Comece hoje" saiu de site.ts: a secao abre direto no h2 (brief v4-secoes, 4.7).
+    expect(screen.queryByText("Comece hoje")).not.toBeInTheDocument();
+    expect(section?.querySelector(".eyebrow")).toBeNull();
   });
 
-  it("carrega o formulario com labels, select em familiar e h3, sem nota legal", () => {
+  it("nao traz trilha, lockup nem fotografia: a unica img e a marca d'agua", () => {
+    renderWithMotion(<Contato />);
+    expect(document.querySelector("svg[data-trail-cluster]")).toBeNull();
+    expect(document.querySelector("[data-comet]")).toBeNull();
+    expect(document.querySelector("[data-brand-lockup]")).toBeNull();
+    const images = Array.from(document.querySelectorAll("#contato img"));
+    expect(images).toHaveLength(1);
+    expect(images[0]).toHaveAttribute("data-brand-watermark");
+  });
+
+  it("card 'Fale com a Moorah': h3, subtitulo e formulario com botao Enviar", () => {
     renderWithMotion(<Contato />);
     expect(screen.getByLabelText(ui.leadForm.name)).toBeInTheDocument();
     expect(screen.getByLabelText(ui.leadForm.email)).toHaveAttribute("type", "email");
     expect(screen.getByLabelText(ui.leadForm.plan)).toHaveValue("familiar");
-    expect(screen.getByRole("heading", { level: 3, name: ui.leadForm.title })).toBeInTheDocument();
+    const title = screen.getByRole("heading", { level: 3, name: ui.leadForm.title });
+    expect(title).toHaveClass("font-semibold");
     expect(screen.getByText(ui.leadForm.subtitle)).toBeInTheDocument();
-    expect(screen.queryByText(/LGPD/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/192/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: ui.leadForm.submit })).toBeInTheDocument();
+    expect(screen.queryByText(/LGPD/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\b192\b/)).not.toBeInTheDocument();
     // Hook do card branco: o e2e mede a folga da marca d'agua contra o card, nao contra o botao.
-    const card = screen
-      .getByRole("heading", { level: 3, name: ui.leadForm.title })
-      .closest("[data-lead-card]");
+    const card = title.closest("[data-lead-card]");
     expect(card).toHaveClass("bg-white", "rounded-2xl");
   });
 
-  it("o link primario aponta para #planos e nao ha wa.me sem WhatsApp configurado", () => {
+  it("'Escolher meu plano' vira secundario (outline-light) apontando para #planos", () => {
     renderWithMotion(<Contato />);
-    const primary = screen.getByRole("link", { name: finalCta.primaryCta });
-    expect(primary).toHaveAttribute("href", "#planos");
-    expect(primary).toHaveClass("bg-white", "text-ink", "h-[52px]");
+    const link = screen.getByRole("link", { name: finalCta.primaryCta });
+    expect(link).toHaveAttribute("href", "#planos");
+    // outline-light: o destino principal da secao e o formulario (pesquisa 4.9).
+    expect(link).toHaveClass("border-berry-300", "text-white", "h-[52px]");
+    expect(link).not.toHaveClass("bg-white", "text-ink");
     const links = screen.getAllByRole("link");
-    expect(links.some((link) => link.getAttribute("href")?.includes("wa.me"))).toBe(false);
+    expect(links.some((item) => item.getAttribute("href")?.includes("wa.me"))).toBe(false);
     expect(screen.queryByRole("link", { name: ui.leadForm.whatsappCta })).not.toBeInTheDocument();
   });
 
@@ -117,46 +133,7 @@ describe("Contato", () => {
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("desenha a Trilha da Amora outline decorativa ao fundo, em modo draw e com cometas", () => {
-    renderWithMotion(<Contato />);
-    const svg = document.querySelector("svg[data-trail-cluster]");
-    expect(svg).toHaveAttribute("data-variant", "outline");
-    expect(svg).toHaveAttribute("data-animate", "draw");
-    expect(svg).toHaveAttribute("aria-hidden", "true");
-    expect(svg).toHaveClass("pointer-events-none", "opacity-25", "hidden", "lg:block");
-    expect(svg).not.toHaveClass("block");
-    // Cometas continuos (CSS): a media query de reduced motion em globals.css os zera.
-    const comets = svg?.querySelectorAll("[data-comet]") ?? [];
-    expect(comets.length).toBeGreaterThan(0);
-    for (const comet of comets) expect(comet).toHaveClass("animate-comet");
-  });
-
-  it("traz o lockup branco decorativo acima do eyebrow", () => {
-    renderWithMotion(<Contato />);
-    const lockup = document.querySelector("[data-brand-lockup]");
-    expect(lockup).not.toBeNull();
-    expect(lockup).toHaveAttribute("aria-hidden", "true");
-    expect(lockup).toHaveClass("opacity-90");
-
-    const images = Array.from(lockup?.querySelectorAll("img") ?? []);
-    expect(images).toHaveLength(2);
-    expect(images[0].getAttribute("src")).toContain("moorah-mark-white");
-    expect(images[0]).toHaveClass("h-8", "w-auto");
-    expect(images[0]).toHaveAttribute("alt", "");
-    expect(images[1].getAttribute("src")).toContain("moorah-wordmark-white");
-    expect(images[1]).toHaveClass("h-4", "w-auto");
-    expect(images[1]).toHaveAttribute("alt", "");
-    // `priority` so no lockup do header e na foto do hero (brief v2, item 1).
-    for (const image of images) {
-      expect(image).toHaveAttribute("loading", "lazy");
-      expect(image).not.toHaveAttribute("fetchpriority", "high");
-    }
-
-    const eyebrow = screen.getByText(finalCta.eyebrow);
-    expect(lockup?.compareDocumentPosition(eyebrow)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-  });
-
-  it("mostra a marca d'agua do simbolo branco, decorativa e so no desktop", () => {
+  it("marca d'agua no canto inferior esquerdo, decorativa e so a partir de xl", () => {
     renderWithMotion(<Contato />);
     const watermark = document.querySelector("[data-brand-watermark]");
     expect(watermark).not.toBeNull();
@@ -165,39 +142,16 @@ describe("Contato", () => {
     expect(watermark?.getAttribute("src")).toContain("moorah-mark-white");
     expect(watermark).toHaveClass(
       "absolute",
-      "right-0",
-      "top-full",
-      "h-[265px]",
+      "left-0",
+      "-bottom-24",
+      "h-[200px]",
       "w-auto",
       "opacity-[0.07]",
       "pointer-events-none",
       "hidden",
-      "lg:block",
+      "xl:block",
     );
     expect(watermark).toHaveAttribute("loading", "lazy");
     expect(watermark).not.toHaveAttribute("fetchpriority", "high");
-  });
-
-  it("traz a foto da medica como card retrato ao lado do formulario", () => {
-    renderWithMotion(<Contato />);
-    const photo = screen.getByAltText(photos.medicaHeadset.alt);
-    expect(photo).toHaveAttribute("sizes", "(min-width: 1024px) 280px, 92vw");
-    expect(photo).toHaveAttribute("loading", "lazy");
-    expect(photo).toHaveClass("object-cover", "h-full", "w-full");
-
-    const frame = photo.parentElement;
-    expect(frame).toHaveClass("aspect-[3/2]", "lg:aspect-[4/5]", "rounded-3xl", "ring-white/10");
-
-    // Desktop: foto na terceira coluna (order-3) e formulario na segunda (order-2).
-    const photoColumn = frame?.parentElement;
-    expect(photoColumn).toHaveClass("order-2", "lg:order-3", "lg:col-span-3", "lg:self-start");
-    const formColumn = screen
-      .getByRole("heading", { level: 3, name: ui.leadForm.title })
-      .closest("div.lg\\:order-2");
-    expect(formColumn).toHaveClass("order-3", "lg:order-2", "lg:col-span-4");
-    // No mobile a foto vem antes do formulario no DOM.
-    expect(photoColumn?.compareDocumentPosition(formColumn as Node)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
   });
 });

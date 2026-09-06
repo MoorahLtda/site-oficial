@@ -1,64 +1,51 @@
-"use client";
-
-import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { faq } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 // Segundo item aberto por padrao: o primeiro gatilho do DOM precisa comecar fechado (contrato e2e).
 const DEFAULT_OPEN = "faq-1";
 
-function itemValue(index: number): string {
-  return `faq-${index}`;
-}
-
 export interface FaqPanelProps {
   className?: string;
 }
 
+/*
+  Acordeao das duvidas, sem card em volta e sem numeracao (brief v4-secoes, 4.6). O border-t da
+  raiz mais o border-b de cada AccordionItem (em ui/) formam a unica hairline da pagina fora do
+  hero: ali a linha demarca o alvo clicavel. Nao controlado (defaultValue): sem hook, sem
+  "use client"; o Radix cuida de aria-expanded, aria-controls e teclado.
+*/
 export function FaqPanel({ className }: FaqPanelProps) {
-  const [open, setOpen] = useState<string>(DEFAULT_OPEN);
-
   return (
-    <div
-      className={cn(
-        "rounded-2xl border border-gray-200 bg-white px-5 shadow-card sm:px-8",
-        className,
-      )}
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue={DEFAULT_OPEN}
+      className={cn("border-t border-gray-200", className)}
     >
-      <RevealGroup stagger={0.05} amount={0.2}>
-        <Accordion type="single" collapsible value={open} onValueChange={setOpen}>
-          {faq.map((item, i) => {
-            const value = itemValue(i);
-            return (
-              <RevealItem key={value} className="border-b border-gray-200 last:border-b-0">
-                <AccordionItem value={value} className="border-b-0">
-                  <AccordionTrigger className="min-h-11 data-[state=open]:text-berry-700">
-                    <span className="flex gap-4">
-                      <span
-                        aria-hidden="true"
-                        className="mt-1 w-6 shrink-0 font-display text-xs font-semibold text-gray-600 tabular-nums transition-colors duration-200 group-data-[state=open]:text-berry-600"
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span>{item.q}</span>
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pl-10 sm:pr-10">
-                    <p className="max-w-prose text-base leading-relaxed text-gray-600">{item.a}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              </RevealItem>
-            );
-          })}
-        </Accordion>
-      </RevealGroup>
-    </div>
+      {faq.map((item, i) => (
+        <AccordionItem key={item.q} value={`faq-${i}`}>
+          <AccordionTrigger className="min-h-11 py-5 text-lg data-[state=open]:text-berry-700">
+            {item.q}
+          </AccordionTrigger>
+          <AccordionContent className="pr-10">
+            <p className="max-w-prose text-base leading-relaxed text-gray-600">{item.a}</p>
+            {item.link ? (
+              <a
+                href={item.link.href}
+                className="mt-3 inline-block font-semibold text-berry-700 underline underline-offset-4 transition-colors duration-200 hover:text-berry-800"
+              >
+                {item.link.label}
+              </a>
+            ) : null}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }

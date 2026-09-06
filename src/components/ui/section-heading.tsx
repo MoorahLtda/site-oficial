@@ -30,7 +30,8 @@ export function SectionHeading({
       <Heading
         id={id}
         className={cn(
-          "font-display font-bold tracking-tight leading-[1.08] text-3xl sm:text-4xl lg:text-5xl",
+          // Peso 600 e tracking do base CSS (-0.02em): hierarquia por peso e escala, sem aperto extra.
+          "font-display font-semibold leading-[1.08] text-3xl sm:text-4xl lg:text-5xl",
           plum ? "text-white" : "text-gray-900",
           eyebrow && "mt-3",
         )}
@@ -41,6 +42,7 @@ export function SectionHeading({
         <p
           className={cn(
             "mt-4 text-lg sm:text-xl leading-relaxed",
+            align === "start" && "max-w-[36rem]",
             plum ? "text-berry-100" : "text-gray-600",
           )}
         >
