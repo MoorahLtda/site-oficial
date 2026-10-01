@@ -58,7 +58,7 @@ jobs:
         run: |
           touch .next-export/.nojekyll
           printf 'User-agent: *\nDisallow: /\n' > .next-export/robots.txt
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: .next-export
 
